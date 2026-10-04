@@ -19,9 +19,14 @@ test('normalizes owner JIDs and rejects a different number', () => {
   assert.equal(isOwnerJid('923000000001@s.whatsapp.net', '923000000000'), false)
 })
 
-test('accepts only http and https URLs', () => {
+test('accepts only public http and https URLs and blocks private/loopback targets', () => {
   assert.equal(isValidHttpUrl('https://example.com/a?q=1'), true)
-  assert.equal(isValidHttpUrl('http://localhost:3000'), true)
+  assert.equal(isValidHttpUrl('http://example.org:8080/path'), true)
+  assert.equal(isValidHttpUrl('http://localhost:3000'), false)
+  assert.equal(isValidHttpUrl('http://127.0.0.1:8788'), false)
+  assert.equal(isValidHttpUrl('http://169.254.169.254/latest/meta-data/'), false)
+  assert.equal(isValidHttpUrl('http://10.0.0.1/admin'), false)
+  assert.equal(isValidHttpUrl('http://192.168.1.1/router'), false)
   assert.equal(isValidHttpUrl('javascript:alert(1)'), false)
   assert.equal(isValidHttpUrl('not-a-url'), false)
 })
