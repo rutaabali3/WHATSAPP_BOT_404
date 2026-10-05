@@ -106,6 +106,27 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 1rem;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--md-sys-shape-corner-s);
+            z-index: 2000;
+            font-weight: 500;
+        }
+
+        .skip-link:focus {
+            top: 1rem;
+        }
+
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -805,6 +826,7 @@
     </style>
 </head>
 <body>
+    <a href="#overview" class="skip-link">Skip to main content</a>
 
     <!-- Top App Bar -->
     <header class="top-app-bar">
@@ -822,8 +844,8 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
-            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Switch to light theme">
+            <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
 
@@ -982,18 +1004,18 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
-                        <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
+                <div class="tab-header" role="tablist" aria-label="Setup Guides">
+                    <button class="tab-header-btn active" id="tab-v1" role="tab" aria-selected="true" aria-controls="v1-setup" onclick="switchSetupTab('v1-setup')">
+                        <span class="material-symbols-rounded" aria-hidden="true">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
-                        <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
+                    <button class="tab-header-btn" id="tab-v2" role="tab" aria-selected="false" aria-controls="v2-setup" onclick="switchSetupTab('v2-setup')">
+                        <span class="material-symbols-rounded" aria-hidden="true">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
 
                 <div class="tab-body">
                     <!-- V1 Setup -->
-                    <div class="tab-content active" id="v1-setup">
+                    <div class="tab-content active" id="v1-setup" role="tabpanel" aria-labelledby="tab-v1">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
@@ -1019,7 +1041,7 @@ npm start</code>
                     </div>
 
                     <!-- V2 Setup -->
-                    <div class="tab-content" id="v2-setup">
+                    <div class="tab-content" id="v2-setup" role="tabpanel" aria-labelledby="tab-v2">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
@@ -1257,10 +1279,14 @@ npm start</code>
 
         // Switch Setup Tab
         function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-header-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
             event.currentTarget.classList.add('active');
+            event.currentTarget.setAttribute('aria-selected', 'true');
             document.getElementById(tabId).classList.add('active');
         }
 
@@ -1273,6 +1299,8 @@ npm start</code>
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
+            const nextTheme = newTheme === 'light' ? 'dark' : 'light';
+            themeToggleBtn.setAttribute('aria-label', `Switch to ${nextTheme} theme`);
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
