@@ -1,18 +1,25 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
-const token = process.env.DASHBOARD_TOKEN ?? ''
-const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
 function authorized(req: http.IncomingMessage) {
-  if (!token) return process.env.NODE_ENV !== 'production'
-  return req.headers.authorization === `Bearer ${token}`
+  const token = process.env.DASHBOARD_TOKEN ?? ''
+  if (!token) return false
+  const authHeader = req.headers.authorization
+  if (!authHeader) return false
+  const expected = `Bearer ${token}`
+  const authBuf = Buffer.from(authHeader)
+  const expectedBuf = Buffer.from(expected)
+  if (authBuf.length !== expectedBuf.length) return false
+  return crypto.timingSafeEqual(authBuf, expectedBuf)
 }
 
 export function startDashboard(repo: MessageRepository) {
+  const port = Number(process.env.DASHBOARD_PORT ?? 8788)
   const server = http.createServer(async (req, res) => {
     if (!authorized(req)) { res.writeHead(401, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'unauthorized' })); return }
     try {
