@@ -1,15 +1,22 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
-const token = process.env.DASHBOARD_TOKEN ?? ''
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
 function authorized(req: http.IncomingMessage) {
-  if (!token) return process.env.NODE_ENV !== 'production'
-  return req.headers.authorization === `Bearer ${token}`
+  const token = process.env.DASHBOARD_TOKEN ?? ''
+  if (!token) return false
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return false
+  const providedToken = authHeader.slice(7)
+  const providedBuf = Buffer.from(providedToken)
+  const tokenBuf = Buffer.from(token)
+  if (providedBuf.length !== tokenBuf.length) return false
+  return crypto.timingSafeEqual(providedBuf, tokenBuf)
 }
 
 export function startDashboard(repo: MessageRepository) {
