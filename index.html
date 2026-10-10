@@ -822,8 +822,8 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
-            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
+            <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
 
@@ -954,16 +954,16 @@
 
             <div class="controls-bar">
                 <div class="search-box">
-                    <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <span class="material-symbols-rounded" aria-hidden="true">search</span>
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all">All Commands</button>
-                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web">Web Tools</button>
-                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                <div class="filter-tabs" role="tablist" aria-label="Command categories">
+                    <button class="tab-btn active" role="tab" aria-selected="true" data-category="all">All Commands</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="ai">AI &amp; Vision</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="media">Media &amp; DL</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="web">Web Tools</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="reader">Reader &amp; Literature</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="v2">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -1248,8 +1248,12 @@ npm start</code>
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
                 btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
