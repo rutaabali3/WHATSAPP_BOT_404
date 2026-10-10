@@ -1,15 +1,20 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
-const token = process.env.DASHBOARD_TOKEN ?? ''
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
 function authorized(req: http.IncomingMessage) {
+  const token = process.env.DASHBOARD_TOKEN ?? ''
   if (!token) return process.env.NODE_ENV !== 'production'
-  return req.headers.authorization === `Bearer ${token}`
+  const authHeader = req.headers.authorization ?? ''
+  // Use constant-time comparison on SHA-256 digests to prevent timing attacks on token validation
+  const authHash = crypto.createHash('sha256').update(authHeader).digest()
+  const expectedHash = crypto.createHash('sha256').update(`Bearer ${token}`).digest()
+  return crypto.timingSafeEqual(authHash, expectedHash)
 }
 
 export function startDashboard(repo: MessageRepository) {
