@@ -123,6 +123,11 @@
             text-decoration: underline;
         }
 
+        button:focus-visible, a:focus-visible, input:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .material-symbols-rounded {
             font-family: 'Material Symbols Rounded';
             font-weight: normal;
@@ -822,7 +827,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -955,15 +960,15 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands" aria-controls="commandsGrid">
                 </div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all">All Commands</button>
-                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web">Web Tools</button>
-                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                <div class="filter-tabs" role="tablist" aria-label="Command categories">
+                    <button class="tab-btn active" role="tab" aria-selected="true" data-category="all">All Commands</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="ai">AI &amp; Vision</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="media">Media &amp; DL</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="web">Web Tools</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="reader">Reader &amp; Literature</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="v2">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -982,11 +987,11 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
+                <div class="tab-header" role="tablist" aria-label="Version installation guides">
+                    <button class="tab-header-btn active" role="tab" aria-selected="true" onclick="switchSetupTab('v1-setup', this)">
                         <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
+                    <button class="tab-header-btn" role="tab" aria-selected="false" onclick="switchSetupTab('v2-setup', this)">
                         <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
@@ -998,7 +1003,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy Version 1 setup commands">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1024,7 +1029,7 @@ npm start</code>
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy Version 2 setup commands">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
@@ -1228,7 +1233,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}', this)" aria-label="Copy ${cmd.name} command syntax">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1248,19 +1253,28 @@ npm start</code>
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
                 btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
         });
 
         // Switch Setup Tab
-        function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+        function switchSetupTab(tabId, targetBtn) {
+            const btn = targetBtn || event.currentTarget;
+            document.querySelectorAll('.tab-header-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            event.currentTarget.classList.add('active');
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
             document.getElementById(tabId).classList.add('active');
         }
 
@@ -1277,9 +1291,14 @@ npm start</code>
         });
 
         // Copy Helper
-        function copyCommand(text) {
+        function copyCommand(text, btn) {
             navigator.clipboard.writeText(text);
             showSnackbar(`Copied command '${text}' to clipboard`);
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;">check</span> Copied!`;
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+            }
         }
 
         function copyText(buttonEl) {
@@ -1287,6 +1306,9 @@ npm start</code>
             if (codeBlock) {
                 navigator.clipboard.writeText(codeBlock.textContent.trim());
                 showSnackbar('Configuration snippet copied');
+                const originalHtml = buttonEl.innerHTML;
+                buttonEl.innerHTML = `<span class="material-symbols-rounded">check</span> Copied!`;
+                setTimeout(() => { buttonEl.innerHTML = originalHtml; }, 1500);
             }
         }
 
