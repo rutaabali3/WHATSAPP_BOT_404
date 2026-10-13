@@ -123,6 +123,13 @@
             text-decoration: underline;
         }
 
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .material-symbols-rounded {
             font-family: 'Material Symbols Rounded';
             font-weight: normal;
@@ -822,7 +829,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -955,15 +962,15 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all">All Commands</button>
-                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web">Web Tools</button>
-                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                <div class="filter-tabs" role="group" aria-label="Filter commands by category">
+                    <button class="tab-btn active" data-category="all" aria-pressed="true">All Commands</button>
+                    <button class="tab-btn" data-category="ai" aria-pressed="false">AI &amp; Vision</button>
+                    <button class="tab-btn" data-category="media" aria-pressed="false">Media &amp; DL</button>
+                    <button class="tab-btn" data-category="web" aria-pressed="false">Web Tools</button>
+                    <button class="tab-btn" data-category="reader" aria-pressed="false">Reader &amp; Literature</button>
+                    <button class="tab-btn" data-category="v2" aria-pressed="false">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -982,11 +989,11 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
+                <div class="tab-header" role="tablist">
+                    <button class="tab-header-btn active" onclick="switchSetupTab(event, 'v1-setup')" role="tab" aria-selected="true">
                         <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
+                    <button class="tab-header-btn" onclick="switchSetupTab(event, 'v2-setup')" role="tab" aria-selected="false">
                         <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
@@ -998,7 +1005,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy V-1 setup code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1024,7 +1031,7 @@ npm start</code>
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy V-2 setup code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
@@ -1228,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1248,19 +1255,28 @@ npm start</code>
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
                 btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
         });
 
         // Switch Setup Tab
-        function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+        function switchSetupTab(e, tabId) {
+            const currentTarget = e ? e.currentTarget : event.currentTarget;
+            document.querySelectorAll('.tab-header-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            event.currentTarget.classList.add('active');
+            currentTarget.classList.add('active');
+            currentTarget.setAttribute('aria-selected', 'true');
             document.getElementById(tabId).classList.add('active');
         }
 
