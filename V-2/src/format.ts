@@ -3,7 +3,35 @@ function clip(value: unknown, max = 1200) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+// Bounded memoization cache for titleCase to prevent memory leaks while avoiding redundant regex operations
+const MAX_CACHE_SIZE = 500
+const titleCaseCache = new Map<string, string>()
+
+function titleCase(value: string): string {
+  let cached = titleCaseCache.get(value)
+  if (!cached) {
+    if (titleCaseCache.size >= MAX_CACHE_SIZE) {
+      titleCaseCache.clear()
+    }
+    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    titleCaseCache.set(value, cached)
+  }
+  return cached
+}
+
+// Pre-defined list of preferred object fields with pre-formatted title-case labels
+// matching exact legacy titleCase(key) output to avoid redundant array allocations and regex execution in hot loops
+const PREFERRED_FIELDS: ReadonlyArray<{ readonly key: string; readonly label: string }> = [
+  { key: 'name', label: 'Name' },
+  { key: 'title', label: 'Title' },
+  { key: 'question', label: 'Question' },
+  { key: 'content', label: 'Content' },
+  { key: 'description', label: 'Description' },
+  { key: 'url', label: 'Url' },
+  { key: 'watchUrl', label: 'WatchUrl' },
+  { key: 'imdbUrl', label: 'ImdbUrl' },
+  { key: 'id', label: 'Id' }
+]
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -25,7 +53,17 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+
+  // Single-pass optimization: iterate through pre-allocated field definitions
+  // avoiding temporary arrays and redundant titleCase conversions for each item formatted
+  const parts: string[] = []
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const field = PREFERRED_FIELDS[i]
+    const val = obj[field.key]
+    if (val != null) {
+      parts.push(`${field.label}: ${clip(val, 260)}`)
+    }
+  }
+
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
