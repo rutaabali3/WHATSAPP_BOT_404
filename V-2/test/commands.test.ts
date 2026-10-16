@@ -13,10 +13,13 @@ test('ignores ordinary messages and unsupported prefixes', () => {
   assert.equal(parseCommand('!help'), null)
 })
 
-test('normalizes owner JIDs and rejects a different number', () => {
+test('normalizes owner JIDs and rejects a different number or empty inputs', () => {
   assert.equal(isOwnerJid('923000000000@s.whatsapp.net', '923000000000'), true)
   assert.equal(isOwnerJid('923000000000:4@s.whatsapp.net', '923000000000'), true)
   assert.equal(isOwnerJid('923000000001@s.whatsapp.net', '923000000000'), false)
+  assert.equal(isOwnerJid('status@broadcast', ''), false)
+  assert.equal(isOwnerJid('status@broadcast', '923000000000'), false)
+  assert.equal(isOwnerJid('', ''), false)
 })
 
 test('accepts only http and https URLs', () => {
