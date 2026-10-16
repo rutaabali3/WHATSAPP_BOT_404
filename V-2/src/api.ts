@@ -53,5 +53,25 @@ export const courses = (q: string) => getJson('/api/courses', { q })
 export const driveup = (params: Record<string, string | number>) => getJson('/api/driveup', params)
 
 export function isValidHttpUrl(value: string) {
-  try { const u = new URL(value); return u.protocol === 'http:' || u.protocol === 'https:' } catch { return false }
+  try {
+    const u = new URL(value)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return false
+    // Security: Mitigate SSRF risks by rejecting local, loopback, and private IP ranges
+    const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+    if (
+      host === 'localhost' ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      host === '127.0.0.1' ||
+      host === '0.0.0.0' ||
+      host === '::1' ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('169.254.') ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
+    ) {
+      return false
+    }
+    return true
+  } catch { return false }
 }
