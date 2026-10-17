@@ -8,11 +8,12 @@ const steps = [
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-export async function sendHackPrank(send: (text: string) => Promise<unknown>) {
+// Optimizing prank execution: accepts configurable delayMs (default: 650ms) to allow fast test execution (0ms)
+export async function sendHackPrank(send: (text: string) => Promise<unknown>, delayMs = 650) {
   const shuffled = [...steps].sort(() => Math.random() - 0.5)
   for (const step of shuffled) {
     await send(step)
-    await wait(650)
+    if (delayMs > 0) await wait(delayMs)
   }
   return send('*🤖 BOT_404 — RESULT*\n\nInformation uploading to dark web...\n\nHaha 😄')
 }
