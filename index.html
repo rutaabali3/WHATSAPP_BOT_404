@@ -123,6 +123,11 @@
             text-decoration: underline;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .material-symbols-rounded {
             font-family: 'Material Symbols Rounded';
             font-weight: normal;
@@ -822,7 +827,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -955,7 +960,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -1165,7 +1170,7 @@ npm start</code>
     </div>
 
     <!-- Toast Snackbar -->
-    <div class="snackbar" id="snackbar">
+    <div class="snackbar" id="snackbar" role="status" aria-live="polite">
         <span class="material-symbols-rounded">check_circle</span>
         <span id="snackbarMsg">Copied to clipboard!</span>
     </div>
