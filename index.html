@@ -114,6 +114,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         a {
             color: var(--md-sys-color-primary);
             text-decoration: none;
@@ -121,13 +126,6 @@
 
         a:hover {
             text-decoration: underline;
-        }
-
-        button:focus-visible,
-        a:focus-visible,
-        input:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
         }
 
         .material-symbols-rounded {
@@ -829,7 +827,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Switch to light theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -962,7 +960,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -1005,7 +1003,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" aria-label="Copy setup snippet to clipboard" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1235,7 +1233,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" aria-label="Copy ${cmd.name} command syntax" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1278,10 +1276,8 @@ npm start</code>
         themeToggleBtn.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            const nextThemeToSwitch = newTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
-            themeToggleBtn.setAttribute('aria-label', `Switch to ${nextThemeToSwitch} theme`);
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
