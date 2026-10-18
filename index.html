@@ -123,7 +123,9 @@
             text-decoration: underline;
         }
 
-        :focus-visible {
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
             outline: 2px solid var(--md-sys-color-primary);
             outline-offset: 2px;
         }
@@ -827,7 +829,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light and dark theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -960,7 +962,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -1003,7 +1005,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
+                            <button class="copy-code-btn" onclick="copyText(this)">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1029,7 +1031,7 @@ npm start</code>
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
+                            <button class="copy-code-btn" onclick="copyText(this)">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
@@ -1233,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy command syntax for ${cmd.name}">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
