@@ -17,6 +17,9 @@ test('normalizes owner JIDs and rejects a different number', () => {
   assert.equal(isOwnerJid('923000000000@s.whatsapp.net', '923000000000'), true)
   assert.equal(isOwnerJid('923000000000:4@s.whatsapp.net', '923000000000'), true)
   assert.equal(isOwnerJid('923000000001@s.whatsapp.net', '923000000000'), false)
+  assert.equal(isOwnerJid('', ''), false)
+  assert.equal(isOwnerJid('status@broadcast', ''), false)
+  assert.equal(isOwnerJid('status@broadcast', 'invalid'), false)
 })
 
 test('accepts only valid public http and https URLs', () => {
