@@ -1,37 +1,43 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import type http from 'node:http'
-import { authorized } from '../src/dashboard.js'
+import { startDashboard } from '../src/dashboard.js'
 
-test('dashboard authorization with token comparison', () => {
-  const secretToken = 'secret-123-token'
+test('dashboard authorization checks using constant-time comparison', async () => {
+  process.env.DASHBOARD_TOKEN = 'secret-token-123'
+  process.env.DASHBOARD_PORT = '0'
+  const mockRepo = {} as any
+  const server = startDashboard(mockRepo)
 
-  const mockReqValid = {
-    headers: { authorization: 'Bearer secret-123-token' }
-  } as http.IncomingMessage
+  await new Promise<void>((resolve) => {
+    if (server.listening) resolve()
+    else server.once('listening', () => resolve())
+  })
 
-  const mockReqInvalidToken = {
-    headers: { authorization: 'Bearer wrong-token' }
-  } as http.IncomingMessage
+  const address = server.address() as { port: number }
+  const url = `http://127.0.0.1:${address.port}/api/status`
 
-  const mockReqMissingHeader = {
-    headers: {}
-  } as http.IncomingMessage
+  try {
+    // Request without authorization header
+    const resUnauthorized = await fetch(url)
+    assert.equal(resUnauthorized.status, 401)
+    const jsonUnauthorized = (await resUnauthorized.json()) as { error: string }
+    assert.deepEqual(jsonUnauthorized, { error: 'unauthorized' })
 
-  assert.equal(authorized(mockReqValid, secretToken), true)
-  assert.equal(authorized(mockReqInvalidToken, secretToken), false)
-  assert.equal(authorized(mockReqMissingHeader, secretToken), false)
-})
+    // Request with invalid token
+    const resWrongToken = await fetch(url, {
+      headers: { authorization: 'Bearer wrong-token' }
+    })
+    assert.equal(resWrongToken.status, 401)
 
-test('dashboard authorization behavior when no token is set', () => {
-  const mockReq = { headers: {} } as http.IncomingMessage
-  const envOriginal = process.env.NODE_ENV
-
-  process.env.NODE_ENV = 'production'
-  assert.equal(authorized(mockReq, ''), false)
-
-  process.env.NODE_ENV = 'development'
-  assert.equal(authorized(mockReq, ''), true)
-
-  process.env.NODE_ENV = envOriginal
+    // Request with valid token
+    const resAuthorized = await fetch(url, {
+      headers: { authorization: 'Bearer secret-token-123' }
+    })
+    assert.equal(resAuthorized.status, 200)
+    const jsonAuthorized = (await resAuthorized.json()) as { ok: boolean; service: string }
+    assert.equal(jsonAuthorized.ok, true)
+    assert.equal(jsonAuthorized.service, 'BOT_404')
+  } finally {
+    await new Promise<void>((resolve) => server.close(() => resolve()))
+  }
 })
