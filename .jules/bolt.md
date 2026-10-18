@@ -1,5 +1,3 @@
-# Bolt's Journal
-
-## 2025-05-18 - Pre-compiled Regexes for Hot Formatter Paths
-**Learning:** Modern V8 engine caches literal regexes in functions, but module-scoped constants still avoid allocation overhead and clarify hot-path code intent during string formatting. Care must be taken not to include untracked generated lockfiles (`pnpm-lock.yaml`) during local verification.
-**Action:** Always clean up temporary workspace lockfiles before requesting code review and submitting PRs.
+## 2025-05-20 - Configurable Delays in Staged Async Tasks
+**Learning:** Hardcoded async delays (`setTimeout`/`wait`) in user-facing prank or staged animation flows drastically slow down test execution when called by unit tests.
+**Action:** Always make delay parameters configurable with production defaults (e.g. `delayMs = 650`), allowing test suites to pass `0` and run in milliseconds.
