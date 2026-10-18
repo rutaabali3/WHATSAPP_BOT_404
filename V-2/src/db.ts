@@ -94,8 +94,13 @@ export class MessageRepository {
 
 export async function ensureMediaDir(dir: string) { await fs.mkdir(path.resolve(dir), { recursive: true }) }
 export async function writeMedia(dir: string, messageId: string, ext: string, data: Buffer) {
+  const baseDir = path.resolve(dir)
   const safeExt = ext.replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'bin'
-  const filePath = path.resolve(dir, `${messageId.replace(/[^a-zA-Z0-9_-]/g, '_')}.${safeExt}`)
+  const safeId = messageId.replace(/[^a-zA-Z0-9_-]/g, '_')
+  const filePath = path.resolve(baseDir, `${safeId}.${safeExt}`)
+  if (!filePath.startsWith(baseDir + path.sep) && filePath !== baseDir) {
+    throw new Error('Path traversal attempt detected')
+  }
   await fs.writeFile(filePath, data)
   return filePath
 }
