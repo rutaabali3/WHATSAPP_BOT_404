@@ -3,7 +3,20 @@ function clip(value: unknown, max = 1200) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+// Memoize titleCase results to avoid re-running expensive regex operations for common keys.
+const titleCaseCache = new Map<string, string>()
+
+function titleCase(value: string): string {
+  let cached = titleCaseCache.get(value)
+  if (cached === undefined) {
+    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    titleCaseCache.set(value, cached)
+  }
+  return cached
+}
+
+// Pre-define preferred field keys to avoid repeated array allocations during response formatting.
+const PREFERRED_KEYS = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id'] as const
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -25,7 +38,14 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+  const parts: string[] = []
+  // Single pass through pre-defined preferred keys, eliminating intermediate .filter().map() array allocations.
+  for (let i = 0; i < PREFERRED_KEYS.length; i++) {
+    const k = PREFERRED_KEYS[i]
+    const val = obj[k]
+    if (val != null) {
+      parts.push(`${titleCase(k)}: ${clip(val, 260)}`)
+    }
+  }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
