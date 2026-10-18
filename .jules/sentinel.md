@@ -1,4 +1,9 @@
-## 2025-02-23 - Defense-in-Depth Security Headers in Node HTTP Dashboard
-**Vulnerability:** HTTP responses served by custom Node `http.createServer` dashboards missing explicit security headers (`X-Content-Type-Options: nosniff`) could expose clients to MIME-type sniffing vulnerabilities if responses or error payloads are interpreted in browser contexts.
-**Learning:** In custom lightweight Node.js HTTP servers (without frameworks like Express/Helmet), response headers must be explicitly configured to enforce modern security standards.
-**Prevention:** Always attach `X-Content-Type-Options: nosniff` header to internal/dashboard HTTP server responses.
+# Sentinel Security Journal
+
+## 2025-05-20 - Constant-time Dashboard Bearer Token Comparison and Strict Entity Type Validation
+
+**Vulnerability:** Dashboard API relied on non-constant-time string comparison (`===`) for bearer token authentication, making it susceptible to timing attacks. Furthermore, missing `DASHBOARD_TOKEN` allowed unauthenticated access in non-production environments, and `/api/trusted` lacked runtime input validation on `type`.
+
+**Learning:** When authenticating via secret API tokens, direct string comparisons leak execution timing details. Default fallback logic that disables authentication in non-production environments can inadvertently expose administrative endpoints. Unvalidated string payloads passed to database commands can result in unhandled errors or data corruption when mapped to SQL ENUM types.
+
+**Prevention:** Always compare sensitive authentication tokens using constant-time comparison algorithms (`crypto.timingSafeEqual`) with buffer length checks, enforce mandatory token configuration for sensitive administrative routes, and strictly validate runtime enum parameters before passing them to database queries.
