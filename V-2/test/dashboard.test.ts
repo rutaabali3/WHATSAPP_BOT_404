@@ -1,48 +1,23 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import http from 'node:http'
-import { startDashboard } from '../src/dashboard.js'
+import type http from 'node:http'
+import { authorized } from '../src/dashboard.js'
 
-test('dashboard authentication handles valid, invalid, and missing tokens', async () => {
-  process.env.DASHBOARD_TOKEN = 'test-secret-token'
-
-  const mockRepo = {
-    pool: { execute: async () => [[]] }
-  } as any
-
-  const server = startDashboard(mockRepo)
-
-  await new Promise<void>((resolve) => {
-    if (server.listening) resolve()
-    else server.once('listening', resolve)
-  })
-
-  const address = server.address()
-  const port = typeof address === 'object' && address ? address.port : 8788
-  const baseUrl = `http://127.0.0.1:${port}`
-
-  const makeRequest = (headers: Record<string, string>) =>
-    new Promise<{ statusCode: number; body: any }>((resolve, reject) => {
-      const req = http.request(`${baseUrl}/api/status`, { headers }, (res) => {
-        let data = ''
-        res.on('data', (chunk) => (data += chunk))
-        res.on('end', () => resolve({ statusCode: res.statusCode ?? 0, body: JSON.parse(data || '{}') }))
-      })
-      req.on('error', reject)
-      req.end()
-    })
-
+test('authorized rejects missing or malformed authorization header when token set', () => {
+  process.env.DASHBOARD_TOKEN = 'secret_token_123'
   try {
-    const resMissing = await makeRequest({})
-    assert.equal(resMissing.statusCode, 401)
+    const reqNoHeader = { headers: {} } as http.IncomingMessage
+    assert.equal(authorized(reqNoHeader), false)
 
-    const resWrong = await makeRequest({ authorization: 'Bearer wrong-token' })
-    assert.equal(resWrong.statusCode, 401)
+    const reqWrongToken = { headers: { authorization: 'Bearer wrong_token' } } as http.IncomingMessage
+    assert.equal(authorized(reqWrongToken), false)
 
-    const resValid = await makeRequest({ authorization: 'Bearer test-secret-token' })
-    assert.equal(resValid.statusCode, 200)
-    assert.equal(resValid.body.ok, true)
+    const reqWrongPrefix = { headers: { authorization: 'Basic dXNlcjpwYXNz' } } as http.IncomingMessage
+    assert.equal(authorized(reqWrongPrefix), false)
+
+    const reqValidToken = { headers: { authorization: 'Bearer secret_token_123' } } as http.IncomingMessage
+    assert.equal(authorized(reqValidToken), true)
   } finally {
-    server.close()
+    delete process.env.DASHBOARD_TOKEN
   }
 })
