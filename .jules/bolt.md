@@ -1,3 +1,3 @@
-## 2025-05-18 - Avoid Repeated String Case Transformations in Formatter Hot Paths
-**Learning:** In string-heavy message formatting pipelines (such as `formatApiResult` / `formatItem`), calling `titleCase` and allocating array filters/maps repeatedly per object property creates measurable overhead during batch formatting. Pre-computing static field labels and memoizing `titleCase` operations reduces execution time by over 50%.
-**Action:** Use pre-formatted static key-label mapping tables and memoize regex-based string transforms in formatting utilities.
+## 2025-05-18 - Memoizing Regex Title Casing in Repeated Formatting
+**Learning:** In hot formatting paths (like `formatApiResult` processing API collections), repeatedly performing regex replacement and string transformations on common object key names (e.g. `titleCase`) creates significant regex execution overhead and GC pressure. Memoizing string transformations on key names reduced formatting time by ~50%.
+**Action:** Always memoize pure string transformations (such as `titleCase` or field name normalizers) when called inside collection mapping or list formatting loops.
