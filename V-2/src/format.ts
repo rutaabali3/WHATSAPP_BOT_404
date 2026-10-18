@@ -1,26 +1,33 @@
+// Pre-computed tuple of preferred field names and their title-cased labels
+// to avoid re-allocating array, running filter/map closures, and executing regex on every item format.
+const PREFERRED_FIELDS: ReadonlyArray<readonly [key: string, label: string]> = [
+  ['name', 'Name'],
+  ['title', 'Title'],
+  ['question', 'Question'],
+  ['content', 'Content'],
+  ['description', 'Description'],
+  ['url', 'Url'],
+  ['watchUrl', 'WatchUrl'],
+  ['imdbUrl', 'ImdbUrl'],
+  ['id', 'Id']
+]
+
+const titleCaseCache = new Map<string, string>()
+
+// Memoized titleCase lookup to avoid redundant regex replacements on repeated keys
+function titleCase(value: string): string {
+  let cached = titleCaseCache.get(value)
+  if (cached === undefined) {
+    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    titleCaseCache.set(value, cached)
+  }
+  return cached
+}
+
 function clip(value: unknown, max = 1200) {
   const text = String(value ?? '').replace(/\s+/g, ' ').trim()
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
-
-// Bounded cache for titleCase conversions to avoid memory leaks while speeding up recurring field name formatting
-const MAX_TITLE_CASE_CACHE_SIZE = 500
-const titleCaseCache = new Map<string, string>()
-
-function titleCase(value: string) {
-  let cached = titleCaseCache.get(value)
-  if (cached) return cached
-  cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  if (titleCaseCache.size >= MAX_TITLE_CASE_CACHE_SIZE) {
-    const firstKey = titleCaseCache.keys().next().value
-    if (firstKey) titleCaseCache.delete(firstKey)
-  }
-  titleCaseCache.set(value, cached)
-  return cached
-}
-
-// Static preferred keys list to avoid re-allocating array on every item formatting
-const PREFERRED_KEYS = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -43,10 +50,11 @@ function formatItem(item: unknown): string {
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
   const parts: string[] = []
-  for (let i = 0; i < PREFERRED_KEYS.length; i++) {
-    const k = PREFERRED_KEYS[i]
-    if (obj[k] != null) {
-      parts.push(`${titleCase(k)}: ${clip(obj[k], 260)}`)
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const [key, label] = PREFERRED_FIELDS[i]
+    const val = obj[key]
+    if (val != null) {
+      parts.push(`${label}: ${clip(val, 260)}`)
     }
   }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
