@@ -114,6 +114,13 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         a {
             color: var(--md-sys-color-primary);
             text-decoration: none;
@@ -810,19 +817,19 @@
     <header class="top-app-bar">
         <div class="brand">
             <div class="brand-icon-wrapper">
-                <span class="material-symbols-rounded" aria-hidden="true">smart_toy</span>
+                <span class="material-symbols-rounded">smart_toy</span>
             </div>
             <span>BOT_404</span>
         </div>
         <ul class="nav-links">
-            <li><a href="#overview" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">info</span> Overview</a></li>
-            <li><a href="#architecture" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">schema</span> Architecture</a></li>
-            <li><a href="#commands" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">terminal</span> Commands</a></li>
-            <li><a href="#quickstart" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">rocket_launch</span> Setup</a></li>
-            <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">dashboard</span> Operations</a></li>
-            <li><a href="#security" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">security</span> Security</a></li>
+            <li><a href="#overview" class="nav-link"><span class="material-symbols-rounded">info</span> Overview</a></li>
+            <li><a href="#architecture" class="nav-link"><span class="material-symbols-rounded">schema</span> Architecture</a></li>
+            <li><a href="#commands" class="nav-link"><span class="material-symbols-rounded">terminal</span> Commands</a></li>
+            <li><a href="#quickstart" class="nav-link"><span class="material-symbols-rounded">rocket_launch</span> Setup</a></li>
+            <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
+            <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
             <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
@@ -837,21 +844,21 @@
                 Runs entirely on local hardware with zero third-party cloud lock-in, high-throughput media processing, and configurable backend adapters.
             </p>
             <div class="badges-row">
-                <span class="chip primary"><span class="material-symbols-rounded" aria-hidden="true">check_circle</span> Baileys v6 Socket</span>
-                <span class="chip tertiary"><span class="material-symbols-rounded" aria-hidden="true">memory</span> Node.js 20+ / 18+</span>
-                <span class="chip"><span class="material-symbols-rounded" aria-hidden="true">code</span> TypeScript &amp; ESM</span>
-                <span class="chip"><span class="material-symbols-rounded" aria-hidden="true">database</span> MariaDB / MySQL</span>
-                <span class="chip"><span class="material-symbols-rounded" aria-hidden="true">shield</span> 100% Privacy First</span>
+                <span class="chip primary"><span class="material-symbols-rounded">check_circle</span> Baileys v6 Socket</span>
+                <span class="chip tertiary"><span class="material-symbols-rounded">memory</span> Node.js 20+ / 18+</span>
+                <span class="chip"><span class="material-symbols-rounded">code</span> TypeScript &amp; ESM</span>
+                <span class="chip"><span class="material-symbols-rounded">database</span> MariaDB / MySQL</span>
+                <span class="chip"><span class="material-symbols-rounded">shield</span> 100% Privacy First</span>
             </div>
             <div class="hero-actions">
                 <a href="#quickstart" class="btn btn-filled">
-                    <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span> Quick Start Setup
+                    <span class="material-symbols-rounded">play_arrow</span> Quick Start Setup
                 </a>
                 <a href="#commands" class="btn btn-tonal">
-                    <span class="material-symbols-rounded" aria-hidden="true">search</span> Explore Commands
+                    <span class="material-symbols-rounded">search</span> Explore Commands
                 </a>
                 <a href="#architecture" class="btn btn-outlined">
-                    <span class="material-symbols-rounded" aria-hidden="true">compare_arrows</span> V-1 vs V-2 Matrix
+                    <span class="material-symbols-rounded">compare_arrows</span> V-1 vs V-2 Matrix
                 </a>
             </div>
         </section>
@@ -860,7 +867,7 @@
         <section class="section" id="architecture">
             <div class="section-header">
                 <div class="icon-badge">
-                    <span class="material-symbols-rounded" aria-hidden="true">architecture</span>
+                    <span class="material-symbols-rounded">architecture</span>
                 </div>
                 <h2>Architectural Matrix (V-1 vs V-2)</h2>
             </div>
@@ -869,7 +876,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <span class="material-symbols-rounded" aria-hidden="true">javascript</span>
+                            <span class="material-symbols-rounded">javascript</span>
                             Version 1 (V-1 Engine)
                         </div>
                         <span class="card-badge badge-v1">Stable Production</span>
@@ -879,23 +886,23 @@
                     </p>
                     <ul class="spec-list">
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">code</span>
+                            <span class="material-symbols-rounded">code</span>
                             <div><strong>Language:</strong> JavaScript (ES Modules)</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">settings_power</span>
+                            <span class="material-symbols-rounded">settings_power</span>
                             <div><strong>Runtime:</strong> Node.js &gt;= 18.0.0</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">folder</span>
+                            <span class="material-symbols-rounded">folder</span>
                             <div><strong>Persistence:</strong> File System (JSON / Pino Structured Logs)</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+                            <span class="material-symbols-rounded">speed</span>
                             <div><strong>Concurrency:</strong> p-queue Rate Limiter (5 req / 10s)</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">psychology</span>
+                            <span class="material-symbols-rounded">psychology</span>
                             <div><strong>AI Engine:</strong> Direct Groq LLaMA 3.3 70B &amp; DDGS</div>
                         </li>
                     </ul>
@@ -905,7 +912,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                            <span class="material-symbols-rounded" aria-hidden="true">integration_instructions</span>
+                            <span class="material-symbols-rounded">integration_instructions</span>
                             Version 2 (V-2 Engine)
                         </div>
                         <span class="card-badge badge-v2">Active Development</span>
@@ -915,27 +922,27 @@
                     </p>
                     <ul class="spec-list">
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">code</span>
+                            <span class="material-symbols-rounded">code</span>
                             <div><strong>Language:</strong> TypeScript (Strict Mode)</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">settings_power</span>
+                            <span class="material-symbols-rounded">settings_power</span>
                             <div><strong>Runtime:</strong> Node.js &gt;= 20.0.0</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">database</span>
+                            <span class="material-symbols-rounded">database</span>
                             <div><strong>Persistence:</strong> MariaDB / MySQL Relational Schema</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">history_toggle_off</span>
+                            <span class="material-symbols-rounded">history_toggle_off</span>
                             <div><strong>Anti-Delete:</strong> Always-on local message capture &amp; owner alert</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">visibility</span>
+                            <span class="material-symbols-rounded">visibility</span>
                             <div><strong>View-Once:</strong> Media extraction via <code>.vv</code> command</div>
                         </li>
                         <li class="spec-item">
-                            <span class="material-symbols-rounded" aria-hidden="true">monitoring</span>
+                            <span class="material-symbols-rounded">monitoring</span>
                             <div><strong>Dashboard:</strong> Local HTTP REST API (Port 8787 / 8788)</div>
                         </li>
                     </ul>
@@ -947,7 +954,7 @@
         <section class="section" id="commands">
             <div class="section-header">
                 <div class="icon-badge">
-                    <span class="material-symbols-rounded" aria-hidden="true">terminal</span>
+                    <span class="material-symbols-rounded">terminal</span>
                 </div>
                 <h2>Interactive Command Suite</h2>
             </div>
@@ -955,7 +962,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded" aria-hidden="true">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -976,7 +983,7 @@
         <section class="section" id="quickstart">
             <div class="section-header">
                 <div class="icon-badge">
-                    <span class="material-symbols-rounded" aria-hidden="true">rocket_launch</span>
+                    <span class="material-symbols-rounded">rocket_launch</span>
                 </div>
                 <h2>Quick Start Installation Guide</h2>
             </div>
@@ -984,10 +991,10 @@
             <div class="tabs-container">
                 <div class="tab-header">
                     <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
-                        <span class="material-symbols-rounded" aria-hidden="true">javascript</span> Version 1 Setup (JS)
+                        <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
                     <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
-                        <span class="material-symbols-rounded" aria-hidden="true">integration_instructions</span> Version 2 Setup (TS + MariaDB)
+                        <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
 
@@ -999,7 +1006,7 @@
                         </p>
                         <div class="code-block">
                             <button class="copy-code-btn" onclick="copyText(this)">
-                                <span class="material-symbols-rounded" aria-hidden="true">content_copy</span> Copy
+                                <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
 cd V-1
@@ -1025,7 +1032,7 @@ npm start</code>
                         </p>
                         <div class="code-block">
                             <button class="copy-code-btn" onclick="copyText(this)">
-                                <span class="material-symbols-rounded" aria-hidden="true">content_copy</span> Copy
+                                <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
 # Import database schema:
@@ -1056,7 +1063,7 @@ npm start</code>
         <section class="section" id="dashboard">
             <div class="section-header">
                 <div class="icon-badge">
-                    <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
+                    <span class="material-symbols-rounded">dashboard</span>
                 </div>
                 <h2>Local Operations &amp; Dashboard (V-2)</h2>
             </div>
@@ -1112,7 +1119,7 @@ npm start</code>
         <section class="section" id="security">
             <div class="section-header">
                 <div class="icon-badge">
-                    <span class="material-symbols-rounded" aria-hidden="true">security</span>
+                    <span class="material-symbols-rounded">security</span>
                 </div>
                 <h2>Security &amp; Data Privacy Directives</h2>
             </div>
@@ -1120,7 +1127,7 @@ npm start</code>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="directive-card warning">
                     <div class="icon-box">
-                        <span class="material-symbols-rounded" aria-hidden="true">warning</span>
+                        <span class="material-symbols-rounded">warning</span>
                     </div>
                     <div>
                         <div class="directive-title">Session Credentials Protection</div>
@@ -1132,7 +1139,7 @@ npm start</code>
 
                 <div class="directive-card">
                     <div class="icon-box">
-                        <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+                        <span class="material-symbols-rounded">lock</span>
                     </div>
                     <div>
                         <div class="directive-title">Loopback Binding Constraint</div>
@@ -1144,7 +1151,7 @@ npm start</code>
 
                 <div class="directive-card">
                     <div class="icon-box">
-                        <span class="material-symbols-rounded" aria-hidden="true">gavel</span>
+                        <span class="material-symbols-rounded">gavel</span>
                     </div>
                     <div>
                         <div class="directive-title">Compliance &amp; Responsible Use</div>
@@ -1165,7 +1172,7 @@ npm start</code>
     </div>
 
     <!-- Toast Snackbar -->
-    <div class="snackbar" id="snackbar">
+    <div class="snackbar" id="snackbar" role="status" aria-live="polite">
         <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
         <span id="snackbarMsg">Copied to clipboard!</span>
     </div>
@@ -1228,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;" aria-hidden="true">content_copy</span>
                             Copy Syntax
                         </button>
