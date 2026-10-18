@@ -5,6 +5,19 @@ function clip(value: unknown, max = 1200) {
 
 function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
 
+// Pre-computed field mapping to avoid array allocation, filtering, mapping, and titleCase regex execution per item
+const PREFERRED_FIELDS: ReadonlyArray<{ key: string; label: string }> = [
+  { key: 'name', label: 'Name' },
+  { key: 'title', label: 'Title' },
+  { key: 'question', label: 'Question' },
+  { key: 'content', label: 'Content' },
+  { key: 'description', label: 'Description' },
+  { key: 'url', label: 'Url' },
+  { key: 'watchUrl', label: 'WatchUrl' },
+  { key: 'imdbUrl', label: 'ImdbUrl' },
+  { key: 'id', label: 'Id' }
+]
+
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
   if (typeof value === 'string') return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${clip(value, 5000)}`
@@ -25,7 +38,12 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+  const parts: string[] = []
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const field = PREFERRED_FIELDS[i]
+    if (obj[field.key] != null) {
+      parts.push(`${field.label}: ${clip(obj[field.key], 260)}`)
+    }
+  }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
