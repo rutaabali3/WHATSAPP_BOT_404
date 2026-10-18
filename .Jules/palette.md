@@ -1,5 +1,3 @@
-# Palette's Journal
-
-## 2025-05-18 - Material Symbols & Keyboard Navigation Accessibility Pattern
-**Learning:** Icon-only controls and Material Symbol font icons require explicit accessibility attributes (`aria-label` and `aria-hidden="true"`). Without `aria-hidden="true"`, screen readers pronounce icon ligature names like "light_mode" or "smart_toy". Additionally, explicit `:focus-visible` ring outlines are needed across custom dark/light theme systems to maintain focus visibility for keyboard users.
-**Action:** Always pair Material Symbol icon spans with `aria-hidden="true"` when accompanied by visible text, add `aria-label` to icon-only buttons, and ensure default focus-visible styles exist for all interactive elements.
+## 2025-10-07 - Accessible Theme Toggle and Search Inputs
+**Learning:** Icon-only buttons and search inputs in standalone dashboard HTML pages frequently lack explicit `aria-label`, `type="button"`, or focus ring indicators, degrading keyboard and screen-reader accessibility.
+**Action:** Always add `aria-label`, `aria-live="polite"` on theme toggles, and uniform `:focus-visible` ring rules on key interactive elements.
