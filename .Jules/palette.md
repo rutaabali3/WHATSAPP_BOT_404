@@ -1,3 +1,3 @@
-## 2025-05-10 - Keyboard focus indicators & ARIA labels in single-page HTML apps
-**Learning:** Single-page dashboard controls using custom styled buttons and inputs require explicit `aria-label`s and `:focus-visible` CSS rules using theme primary tokens to support keyboard navigation and screen readers without layout distortion.
-**Action:** When working on standalone HTML documentation or dashboard interfaces, check interactive icon buttons and search inputs for ARIA labels and `:focus-visible` styling.
+## 2024-10-09 - Accessible Toast Notifications & Icon Buttons
+**Learning:** Icon-only buttons (like theme togglers) and floating toast notifications (like copy snackbars) need explicit `aria-label` and `role="status"`/`aria-live="polite"` attributes, plus dynamic state updates, to ensure screen reader users receive equal visual feedback.
+**Action:** Always pair floating status snackbars with `role="status"` and `aria-live="polite"`, and update icon button `aria-label`s dynamically on state changes.
