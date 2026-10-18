@@ -1,6 +1,4 @@
-# Sentinel Security Journal
-
-## 2026-10-04 - SSRF Protection in User-Facing URL Commands
-**Vulnerability:** User-supplied URLs passed to WhatsApp commands (such as downloader, screenshot, and website zip) were validated only by protocol prefix without restricting loopback, cloud metadata, or private network targets.
-**Learning:** `isValidHttpUrl` in `V-2/src/api.ts` is the single gateway for validating chat URLs before invoking external APIs.
-**Prevention:** Always validate hostnames against private IPv4 blocks (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), loopback addresses (127.0.0.0/8, ::1, localhost), link-local cloud metadata (169.254.169.254), and local domain suffixes.
+## 2025-02-23 - Path Traversal Protection in Media Storage
+**Vulnerability:** Message ID strings passed to `writeMedia()` could contain directory traversal sequences like `../../`, allowing arbitrary file writes outside the intended media folder.
+**Learning:** Even internal message identifiers (e.g. from WhatsApp message keys or upstream APIs) must be sanitized with `path.basename()` and validated against `baseDir` containment checks before saving files to disk.
+**Prevention:** Always use `path.basename()` on untrusted path components and verify that `path.resolve(baseDir, file)` starts with `path.resolve(baseDir) + path.sep`.

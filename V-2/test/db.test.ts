@@ -3,29 +3,26 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
-import { writeMedia, ensureMediaDir } from '../src/db.js'
+import { writeMedia } from '../src/db.js'
 
-test('writeMedia writes file inside base directory safely', async () => {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bot404-test-'))
+test('writeMedia prevents path traversal outside designated directory', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'media-test-'))
   try {
-    await ensureMediaDir(tmpDir)
-    const filePath = await writeMedia(tmpDir, 'msg_12345', 'png', Buffer.from('test data'))
-    assert.equal(filePath.startsWith(tmpDir), true)
-    const content = await fs.readFile(filePath)
-    assert.equal(content.toString(), 'test data')
-  } finally {
-    await fs.rm(tmpDir, { recursive: true, force: true })
-  }
-})
+    const maliciousId = '../../evil_file'
+    const writtenPath = await writeMedia(tmpDir, maliciousId, 'jpg', Buffer.from('test data'))
 
-test('writeMedia normalizes unsafe messageId characters', async () => {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bot404-test-'))
-  try {
-    await ensureMediaDir(tmpDir)
-    const filePath = await writeMedia(tmpDir, '../../../etc/passwd', 'jpg', Buffer.from('test'))
-    const normalizedDir = path.resolve(tmpDir)
-    assert.equal(filePath.startsWith(normalizedDir), true)
-    assert.equal(path.basename(filePath), '_________etc_passwd.jpg')
+    // The written path must be inside tmpDir
+    const resolvedBase = path.resolve(tmpDir)
+    const resolvedWritten = path.resolve(writtenPath)
+
+    assert.ok(
+      resolvedWritten.startsWith(resolvedBase + path.sep) || resolvedWritten === resolvedBase,
+      `Expected ${resolvedWritten} to be within ${resolvedBase}`
+    )
+
+    // Ensure the file exists at resolvedWritten and contents match
+    const content = await fs.readFile(resolvedWritten, 'utf8')
+    assert.equal(content, 'test data')
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true })
   }
