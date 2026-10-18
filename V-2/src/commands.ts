@@ -47,6 +47,9 @@ export function helpText(prefix = '.') {
 }
 
 export function isOwnerJid(jid: string, ownerNumber: string) {
+  if (!jid || !ownerNumber) return false
   const normalized = jid.split(':')[0].split('@')[0].replace(/\D/g, '')
-  return normalized === ownerNumber.replace(/\D/g, '')
+  const normalizedOwner = ownerNumber.replace(/\D/g, '')
+  if (!normalized || !normalizedOwner) return false
+  return normalized === normalizedOwner
 }

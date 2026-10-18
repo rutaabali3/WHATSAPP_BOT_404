@@ -4,10 +4,11 @@ import { reactTo, sendSignedText } from '../helpers.js';
 import logger from '../logger.js';
 
 export async function vvCommand({ sock, jid, message, sender }) {
+  if (!OWNER_JID || !sender) return;
   const owner = jidNormalizedUser(OWNER_JID);
   const user = jidNormalizedUser(sender);
 
-  if (user !== owner) return;
+  if (!user || user !== owner) return;
 
   const contextInfo = message.message?.extendedTextMessage?.contextInfo;
   if (!contextInfo?.quotedMessage || !contextInfo?.stanzaId) {
