@@ -1,6 +1,7 @@
 import http from 'node:http'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
 const token = process.env.DASHBOARD_TOKEN ?? ''
@@ -9,9 +10,14 @@ const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 // Security: enforce max body size (64 KB) to prevent memory exhaustion / OOM DoS attacks
 const MAX_BODY_SIZE = 64 * 1024
 
-function authorized(req: http.IncomingMessage) {
-  if (!token) return process.env.NODE_ENV !== 'production'
-  return req.headers.authorization === `Bearer ${token}`
+export function authorized(req: http.IncomingMessage, secretToken = token) {
+  if (!secretToken) return process.env.NODE_ENV !== 'production'
+  const expected = `Bearer ${secretToken}`
+  const actual = req.headers.authorization ?? ''
+  const expectedBuf = Buffer.from(expected)
+  const actualBuf = Buffer.from(actual)
+  if (expectedBuf.length !== actualBuf.length) return false
+  return crypto.timingSafeEqual(expectedBuf, actualBuf)
 }
 
 export function startDashboard(repo: MessageRepository) {
