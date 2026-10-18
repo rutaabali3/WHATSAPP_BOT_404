@@ -3,7 +3,17 @@ function clip(value: unknown, max = 1200) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+// Cache title-cased keys to avoid executing regex replacements repeatedly on key strings
+const titleCaseCache = new Map<string, string>()
+
+function titleCase(value: string) {
+  let cached = titleCaseCache.get(value)
+  if (cached === undefined) {
+    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    titleCaseCache.set(value, cached)
+  }
+  return cached
+}
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -21,18 +31,17 @@ export function formatApiResult(value: unknown, title = 'Result'): string {
   return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${lines.join('\n') || 'No data returned.'}`
 }
 
-// Pre-computed field keys and pre-formatted title-case labels to avoid array allocation
-// and regex evaluation on every call to formatItem.
-const PREFERRED_FIELDS: ReadonlyArray<readonly [string, string]> = [
-  ['name', 'Name'],
-  ['title', 'Title'],
-  ['question', 'Question'],
-  ['content', 'Content'],
-  ['description', 'Description'],
-  ['url', 'Url'],
-  ['watchUrl', 'WatchUrl'],
-  ['imdbUrl', 'ImdbUrl'],
-  ['id', 'Id']
+// Pre-defined ordered list of preferred field keys and pre-formatted field titles for formatItem to avoid array allocations and repeated titleCase calls during item formatting
+const PREFERRED_FIELDS: ReadonlyArray<{ key: string; label: string }> = [
+  { key: 'name', label: 'Name' },
+  { key: 'title', label: 'Title' },
+  { key: 'question', label: 'Question' },
+  { key: 'content', label: 'Content' },
+  { key: 'description', label: 'Description' },
+  { key: 'url', label: 'Url' },
+  { key: 'watchUrl', label: 'WatchUrl' },
+  { key: 'imdbUrl', label: 'ImdbUrl' },
+  { key: 'id', label: 'Id' }
 ]
 
 function formatItem(item: unknown): string {
@@ -40,10 +49,12 @@ function formatItem(item: unknown): string {
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
   const parts: string[] = []
+  // Optimization: use single-pass loop over constant PREFERRED_FIELDS without chaining filter/map array allocations
   for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
-    const [key, label] = PREFERRED_FIELDS[i]
-    if (obj[key] != null) {
-      parts.push(`${label}: ${clip(obj[key], 260)}`)
+    const { key, label } = PREFERRED_FIELDS[i]
+    const val = obj[key]
+    if (val != null) {
+      parts.push(`${label}: ${clip(val, 260)}`)
     }
   }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)

@@ -1,3 +1,5 @@
-## 2025-05-18 - Case Sensitivity and Regex in Utility Formatter
-**Learning:** `titleCase` in this codebase only converts `[-_]` to spaces and upper-cases word starts, so camelCase strings like `watchUrl` produce `WatchUrl` rather than `Watch Url`. Pre-computing static field mappings for hot formatting paths requires checking actual regex behavior to guarantee exact string parity.
-**Action:** Always test original utility behavior with exact string outputs before pre-computing static maps or memoization tables.
+# Bolt's Journal - Critical Learnings
+
+## 2025-02-21 - Format Item Label Title Casing
+**Learning:** `titleCase` regex (`/[-_]/g` and `/\b\w/g`) does not split camelCase strings (e.g. `watchUrl` -> `WatchUrl`, not `Watch Url`).
+**Action:** When pre-formatting constant labels for camelCase keys to eliminate runtime `titleCase` calls, ensure exact matching with regex output behavior to avoid subtle string format regressions.
