@@ -1,4 +1,4 @@
-## 2025-05-18 - Dashboard Authentication and Body Size Limits
-**Vulnerability:** Unauthenticated access allowed on dashboard endpoints when `DASHBOARD_TOKEN` was unset, authorization string comparison vulnerable to timing side-channels, and unbounded request streaming on `POST /api/trusted` allowing DoS via memory exhaustion.
-**Learning:** Checking `process.env.NODE_ENV !== 'production'` as a fallback for missing auth tokens creates authentication bypasses across non-production setups.
-**Prevention:** Require explicit tokens and reject requests when token is empty, compare bearer headers with `crypto.timingSafeEqual`, and enforce max body size caps on raw HTTP streaming endpoints.
+## 2025-05-18 - Constant-Time Token Comparison and Missing Secret Fallback in Dashboard Server
+**Vulnerability:** Weak string comparison (`===`) vulnerable to timing attacks and insecure fallback allowing unauthenticated access when `DASHBOARD_TOKEN` was unset in non-production environments.
+**Learning:** `req.headers.authorization` strings must be compared in constant time using `crypto.timingSafeEqual` after checking buffer lengths. Additionally, administrative endpoints must fail securely by default when missing authorization configuration rather than falling back to unauthenticated access.
+**Prevention:** Always require non-empty credentials for protected endpoints and compare secret tokens using constant-time comparison buffers.
