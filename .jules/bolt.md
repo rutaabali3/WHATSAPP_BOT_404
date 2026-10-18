@@ -1,3 +1,3 @@
-## 2025-05-18 - API Result Formatting Bottleneck
-**Learning:** In the WhatsApp bot response pipeline, string formatting for API collections (`formatApiResult` / `formatItem`) repeatedly allocated transient key arrays and re-executed regex title-casing on static key strings for every list item.
-**Action:** Pre-compute static key-label pairs, hoist constant collection arrays, memoize `titleCase`, and guard `clip` regex calls to achieve ~3.8x faster formatting without changing output.
+## 2025-02-14 - String formatting memoization and array allocation optimization
+**Learning:** Formatting large API responses or lists repeatedly creates significant garbage collection overhead and CPU time when constructing arrays and evaluating regexes (like title-casing strings) on every item.
+**Action:** Memoize string transformation functions like `titleCase` with a Map and hoist static key arrays (`PREFERRED_KEYS`) to avoid intermediate `.filter().map()` allocations in tight hot loops.
