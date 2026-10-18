@@ -106,6 +106,13 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -344,18 +351,6 @@
         .btn-outlined:hover {
             background-color: var(--md-sys-color-surface-container-high);
             text-decoration: none;
-        }
-
-        /* Focus Visible Indicators for Accessibility */
-        .btn:focus-visible,
-        .tab-btn:focus-visible,
-        .theme-toggle-btn:focus-visible,
-        .copy-btn:focus-visible,
-        .copy-code-btn:focus-visible,
-        .tab-header-btn:focus-visible,
-        .nav-link:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
         }
 
         /* Section Styling */
@@ -969,13 +964,13 @@
                     <span class="material-symbols-rounded">search</span>
                     <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all">All Commands</button>
-                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web">Web Tools</button>
-                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                <div class="filter-tabs" role="tablist" aria-label="Command categories">
+                    <button class="tab-btn active" data-category="all" role="tab" aria-selected="true">All Commands</button>
+                    <button class="tab-btn" data-category="ai" role="tab" aria-selected="false">AI &amp; Vision</button>
+                    <button class="tab-btn" data-category="media" role="tab" aria-selected="false">Media &amp; DL</button>
+                    <button class="tab-btn" data-category="web" role="tab" aria-selected="false">Web Tools</button>
+                    <button class="tab-btn" data-category="reader" role="tab" aria-selected="false">Reader &amp; Literature</button>
+                    <button class="tab-btn" data-category="v2" role="tab" aria-selected="false">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -994,11 +989,11 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
+                <div class="tab-header" role="tablist" aria-label="Setup guide tabs">
+                    <button class="tab-header-btn active" role="tab" aria-selected="true" aria-controls="v1-setup" onclick="switchSetupTab('v1-setup', this)">
                         <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
+                    <button class="tab-header-btn" role="tab" aria-selected="false" aria-controls="v2-setup" onclick="switchSetupTab('v2-setup', this)">
                         <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
@@ -1177,7 +1172,7 @@ npm start</code>
     </div>
 
     <!-- Toast Snackbar -->
-    <div class="snackbar" id="snackbar" role="status" aria-live="polite">
+    <div class="snackbar" id="snackbar">
         <span class="material-symbols-rounded">check_circle</span>
         <span id="snackbarMsg">Copied to clipboard!</span>
     </div>
@@ -1240,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" aria-label="Copy syntax for ${cmd.name}" onclick="copyCommand('${cmd.name}')">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1260,19 +1255,30 @@ npm start</code>
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
                 btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
         });
 
         // Switch Setup Tab
-        function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+        function switchSetupTab(tabId, targetBtn) {
+            document.querySelectorAll('.tab-header-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            event.currentTarget.classList.add('active');
+            const activeBtn = targetBtn || (window.event && window.event.currentTarget);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-selected', 'true');
+            }
             document.getElementById(tabId).classList.add('active');
         }
 
@@ -1283,10 +1289,10 @@ npm start</code>
         themeToggleBtn.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            const nextTheme = newTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
-            themeToggleBtn.setAttribute('aria-label', `Switch to ${nextTheme} mode`);
+            const nextModeLabel = newTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+            themeToggleBtn.setAttribute('aria-label', nextModeLabel);
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
