@@ -9,6 +9,12 @@ export function allowCommand(jid: string) {
   const current = buckets.get(jid)
   if (!current || now - current.started >= WINDOW_MS) {
     buckets.set(jid, { started: now, count: 1 })
+    // Periodically clean up expired rate-limit entries to prevent memory leaks in long-running instances
+    if (buckets.size > 100) {
+      for (const [key, bucket] of buckets.entries()) {
+        if (now - bucket.started >= WINDOW_MS) buckets.delete(key)
+      }
+    }
     return true
   }
   if (current.count >= MAX_COMMANDS) return false

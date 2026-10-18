@@ -114,6 +114,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         a {
             color: var(--md-sys-color-primary);
             text-decoration: none;
@@ -1233,7 +1238,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
