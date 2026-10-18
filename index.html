@@ -106,13 +106,6 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
-        a:focus-visible,
-        button:focus-visible,
-        input:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
-        }
-
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -128,13 +121,6 @@
 
         a:hover {
             text-decoration: underline;
-        }
-
-        a:focus-visible,
-        button:focus-visible,
-        input:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
         }
 
         .material-symbols-rounded {
@@ -226,6 +212,13 @@
         .theme-toggle-btn:hover {
             background-color: var(--md-sys-color-surface-container-high);
             color: var(--md-sys-color-on-surface);
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
         }
 
         /* Container Layout */
@@ -969,15 +962,15 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all" aria-pressed="true">All Commands</button>
-                    <button class="tab-btn" data-category="ai" aria-pressed="false">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media" aria-pressed="false">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web" aria-pressed="false">Web Tools</button>
-                    <button class="tab-btn" data-category="reader" aria-pressed="false">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2" aria-pressed="false">V-2 Recovery</button>
+                    <button class="tab-btn active" data-category="all">All Commands</button>
+                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
+                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
+                    <button class="tab-btn" data-category="web">Web Tools</button>
+                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
+                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -996,23 +989,23 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header" role="tablist" aria-label="Quick Start Setup Options">
-                    <button class="tab-header-btn active" id="tab-btn-v1-setup" role="tab" aria-selected="true" aria-controls="v1-setup" onclick="switchSetupTab('v1-setup', event)">
+                <div class="tab-header">
+                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
                         <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" id="tab-btn-v2-setup" role="tab" aria-selected="false" aria-controls="v2-setup" onclick="switchSetupTab('v2-setup', event)">
+                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
                         <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
 
                 <div class="tab-body">
                     <!-- V1 Setup -->
-                    <div class="tab-content active" id="v1-setup" role="tabpanel" aria-labelledby="tab-btn-v1-setup">
+                    <div class="tab-content active" id="v1-setup">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1033,12 +1026,12 @@ npm start</code>
                     </div>
 
                     <!-- V2 Setup -->
-                    <div class="tab-content" id="v2-setup" role="tabpanel" aria-labelledby="tab-btn-v2-setup">
+                    <div class="tab-content" id="v2-setup">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
@@ -1242,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                    <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1262,28 +1255,19 @@ npm start</code>
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-pressed', 'false');
-                });
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                btn.setAttribute('aria-pressed', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
         });
 
         // Switch Setup Tab
-        function switchSetupTab(tabId, ev) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-selected', 'false');
-            });
+        function switchSetupTab(tabId) {
+            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            const targetBtn = ev ? ev.currentTarget : event.currentTarget;
-            targetBtn.classList.add('active');
-            targetBtn.setAttribute('aria-selected', 'true');
+            event.currentTarget.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
