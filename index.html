@@ -106,13 +106,6 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
-        a:focus-visible,
-        button:focus-visible,
-        input:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
-        }
-
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -829,8 +822,8 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Switch to light mode">
-            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Light/Dark Theme">
+            <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
 
@@ -961,16 +954,16 @@
 
             <div class="controls-bar">
                 <div class="search-box">
-                    <span class="material-symbols-rounded">search</span>
+                    <span class="material-symbols-rounded" aria-hidden="true">search</span>
                     <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs" role="tablist" aria-label="Command categories">
-                    <button class="tab-btn active" data-category="all" role="tab" aria-selected="true">All Commands</button>
-                    <button class="tab-btn" data-category="ai" role="tab" aria-selected="false">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media" role="tab" aria-selected="false">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web" role="tab" aria-selected="false">Web Tools</button>
-                    <button class="tab-btn" data-category="reader" role="tab" aria-selected="false">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2" role="tab" aria-selected="false">V-2 Recovery</button>
+                    <button class="tab-btn active" role="tab" aria-selected="true" data-category="all">All Commands</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="ai">AI &amp; Vision</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="media">Media &amp; DL</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="web">Web Tools</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="reader">Reader &amp; Literature</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-category="v2">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -989,11 +982,11 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header" role="tablist" aria-label="Setup guide tabs">
-                    <button class="tab-header-btn active" role="tab" aria-selected="true" aria-controls="v1-setup" onclick="switchSetupTab('v1-setup', this)">
+                <div class="tab-header">
+                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
                         <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" role="tab" aria-selected="false" aria-controls="v2-setup" onclick="switchSetupTab('v2-setup', this)">
+                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
                         <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
@@ -1235,7 +1228,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" aria-label="Copy syntax for ${cmd.name}" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1267,18 +1260,11 @@ npm start</code>
         });
 
         // Switch Setup Tab
-        function switchSetupTab(tabId, targetBtn) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-selected', 'false');
-            });
+        function switchSetupTab(tabId) {
+            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            const activeBtn = targetBtn || (window.event && window.event.currentTarget);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-                activeBtn.setAttribute('aria-selected', 'true');
-            }
+            event.currentTarget.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
@@ -1291,8 +1277,6 @@ npm start</code>
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
-            const nextModeLabel = newTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
-            themeToggleBtn.setAttribute('aria-label', nextModeLabel);
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
