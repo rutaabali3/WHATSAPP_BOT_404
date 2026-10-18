@@ -5,6 +5,14 @@ function clip(value: unknown, max = 1200) {
 
 function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
 
+// Hoisted static collection keys to prevent array re-allocation on every formatApiResult call
+const COLLECTION_KEYS = ['results', 'courses', 'novels', 'chapters', 'categories', 'templates', 'details'] as const
+
+// Precomputed preferred fields with pre-title-cased labels to avoid allocating temporary
+// arrays (.filter, .map) and running regexes (titleCase) repeatedly for every item in lists
+const PREFERRED_KEYS = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id'] as const
+const PREFERRED_FIELDS = PREFERRED_KEYS.map(k => ({ key: k, label: titleCase(k) }))
+
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
   if (typeof value === 'string') return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${clip(value, 5000)}`
@@ -15,7 +23,7 @@ export function formatApiResult(value: unknown, title = 'Result'): string {
   if (data.success === false || data.ok === false) return `*🤖 BOT_404 — ERROR*\n\n${clip(data.error ?? data.message ?? 'The API returned an error.')}`
   if (Array.isArray(data.voices)) return `*🤖 BOT_404 — SPEECHSTER VOICES*\n\n${data.voices.slice(0, 60).map((v: any) => `${v.index ?? '?'} — ${v.name ?? v.id ?? 'Unnamed'} (${v.language ?? 'unknown'})`).join('\n') || 'No voices found.'}`
   if (Array.isArray(data.questions)) return `*🤖 BOT_404 — MY TELENOR QUIZ*\n\n*Date:* ${data.date ?? 'Today'}\n${data.questions.map((q: any) => `\n${q.number ?? ''}. ${clip(q.question, 300)}\n*Answer:* ${clip(q.answer, 160)}`).join('\n')}`
-  const collectionKey = ['results', 'courses', 'novels', 'chapters', 'categories', 'templates', 'details'].find(k => Array.isArray(data[k]))
+  const collectionKey = COLLECTION_KEYS.find(k => Array.isArray(data[k]))
   if (collectionKey) return `*🤖 BOT_404 — ${titleCase(collectionKey).toUpperCase()}*${data.total != null ? ` (${data.total})` : ''}\n\n${(data[collectionKey] as unknown[]).slice(0, 20).map((item, i) => `${i + 1}. ${formatItem(item)}`).join('\n') || 'No items found.'}`
   const lines = Object.entries(data).filter(([key]) => !['success', 'ok'].includes(key)).slice(0, 30).map(([key, item]) => `*${titleCase(key)}:* ${formatItem(item)}`)
   return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${lines.join('\n') || 'No data returned.'}`
@@ -25,7 +33,12 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+  const parts: string[] = []
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const { key, label } = PREFERRED_FIELDS[i]
+    if (obj[key] != null) {
+      parts.push(`${label}: ${clip(obj[key], 260)}`)
+    }
+  }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
