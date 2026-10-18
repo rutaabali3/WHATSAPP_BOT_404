@@ -21,11 +21,30 @@ export function formatApiResult(value: unknown, title = 'Result'): string {
   return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${lines.join('\n') || 'No data returned.'}`
 }
 
+// Pre-computed field keys and pre-formatted title-case labels to avoid array allocation
+// and regex evaluation on every call to formatItem.
+const PREFERRED_FIELDS: ReadonlyArray<readonly [string, string]> = [
+  ['name', 'Name'],
+  ['title', 'Title'],
+  ['question', 'Question'],
+  ['content', 'Content'],
+  ['description', 'Description'],
+  ['url', 'Url'],
+  ['watchUrl', 'WatchUrl'],
+  ['imdbUrl', 'ImdbUrl'],
+  ['id', 'Id']
+]
+
 function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+  const parts: string[] = []
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const [key, label] = PREFERRED_FIELDS[i]
+    if (obj[key] != null) {
+      parts.push(`${label}: ${clip(obj[key], 260)}`)
+    }
+  }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
