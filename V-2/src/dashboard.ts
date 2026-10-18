@@ -7,16 +7,18 @@ import type { MessageRepository } from './db.js'
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
-export function authorized(req: http.IncomingMessage) {
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  if (bufA.length !== bufB.length) return false
+  return crypto.timingSafeEqual(bufA, bufB)
+}
+
+function authorized(req: http.IncomingMessage) {
   const token = process.env.DASHBOARD_TOKEN ?? ''
   if (!token) return process.env.NODE_ENV !== 'production'
-  const authHeader = req.headers.authorization
-  if (!authHeader) return false
-  const expectedHeader = `Bearer ${token}`
-  const authBuf = Buffer.from(authHeader)
-  const expectedBuf = Buffer.from(expectedHeader)
-  if (authBuf.length !== expectedBuf.length) return false
-  return crypto.timingSafeEqual(authBuf, expectedBuf)
+  const authHeader = req.headers.authorization ?? ''
+  return safeCompare(authHeader, `Bearer ${token}`)
 }
 
 export function startDashboard(repo: MessageRepository) {
@@ -31,8 +33,7 @@ export function startDashboard(repo: MessageRepository) {
       if (req.method === 'POST' && req.url === '/api/trusted') {
         const chunks: Buffer[] = []; for await (const chunk of req) chunks.push(Buffer.from(chunk))
         const body = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { jid?: string; type?: 'user' | 'group'; note?: string }
-        if (!body.jid || !body.type) { res.writeHead(400, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'jid and type required' })); return }
-        if (body.type !== 'user' && body.type !== 'group') { res.writeHead(400, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'invalid entity type, must be user or group' })); return }
+        if (!body.jid || !body.type) { res.writeHead(400); res.end(JSON.stringify({ error: 'jid and type required' })); return }
         await repo.pool.execute('INSERT INTO trusted_entities (jid, entity_type, note) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE entity_type=VALUES(entity_type), note=VALUES(note)', [body.jid, body.type, body.note ?? null])
         res.writeHead(201, { 'content-type': 'application/json' }); res.end(JSON.stringify({ ok: true })); return
       }
