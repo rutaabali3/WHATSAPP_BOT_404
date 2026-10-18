@@ -1,5 +1,3 @@
-# Bolt's Journal - Critical Learnings
-
-## 2025-02-21 - Format Item Label Title Casing
-**Learning:** `titleCase` regex (`/[-_]/g` and `/\b\w/g`) does not split camelCase strings (e.g. `watchUrl` -> `WatchUrl`, not `Watch Url`).
-**Action:** When pre-formatting constant labels for camelCase keys to eliminate runtime `titleCase` calls, ensure exact matching with regex output behavior to avoid subtle string format regressions.
+## 2025-05-20 - Precomputing Field Maps for Response Formatter
+**Learning:** Re-allocating key arrays and running regex `titleCase` inside hot per-item loops (like response formatters) causes high GC pressure and regex overhead (~100 regex calls per response).
+**Action:** Precompute static field-to-label maps and cache string casing transformations outside hot loops.
