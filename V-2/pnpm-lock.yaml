@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@whiskeysockets/baileys':
         specifier: 7.0.0-rc14
-        version: 7.0.0-rc14(sharp@0.35.5(@types/node@24.19.1))
+        version: 7.0.0-rc14(sharp@0.35.5(@types/node@24.19.2))
       axios:
         specifier: ^1.11.0
         version: 1.20.0
@@ -22,7 +22,7 @@ importers:
         version: 3.0.2
       mysql2:
         specifier: ^3.23.4
-        version: 3.24.5(@types/node@24.19.1)
+        version: 3.24.5(@types/node@24.19.2)
       pino:
         specifier: ^9.9.0
         version: 9.14.0
@@ -35,7 +35,7 @@ importers:
         version: 2.1.4
       '@types/node':
         specifier: ^24.3.0
-        version: 24.19.1
+        version: 24.19.2
       '@types/qrcode-terminal':
         specifier: ^0.12.2
         version: 0.12.2
@@ -437,8 +437,8 @@ packages:
   '@types/mime-types@2.1.4':
     resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
 
-  '@types/node@24.19.1':
-    resolution: {integrity: sha512-aS3/DG0oM05K0RIXXP+hKjinGG5IgSSVGzswZxW3O0sS3pH4/fycXundUC9XsszgKCk4gHXylTEK6hyFxVxnoQ==}
+  '@types/node@24.19.2':
+    resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
 
   '@types/qrcode-terminal@0.12.2':
     resolution: {integrity: sha512-v+RcIEJ+Uhd6ygSQ0u5YYY7ZM+la7GgPbs0V/7l/kFs2uO4S8BcIUEMoP7za4DNIqNnUD5npf0A/7kBhrCKG5Q==}
@@ -1068,13 +1068,13 @@ snapshots:
 
   '@types/mime-types@2.1.4': {}
 
-  '@types/node@24.19.1':
+  '@types/node@24.19.2':
     dependencies:
       undici-types: 7.24.6
 
   '@types/qrcode-terminal@0.12.2': {}
 
-  '@whiskeysockets/baileys@7.0.0-rc14(sharp@0.35.5(@types/node@24.19.1))':
+  '@whiskeysockets/baileys@7.0.0-rc14(sharp@0.35.5(@types/node@24.19.2))':
     dependencies:
       '@cacheable/node-cache': 1.7.6
       '@hapi/boom': 9.1.4
@@ -1085,7 +1085,7 @@ snapshots:
       p-queue: 9.3.3
       pino: 9.14.0
       protobufjs: 7.6.6
-      sharp: 0.35.5(@types/node@24.19.1)
+      sharp: 0.35.5(@types/node@24.19.2)
       whatsapp-rust-bridge: 0.5.4
       ws: 8.22.0
     transitivePeerDependencies:
@@ -1331,9 +1331,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mysql2@3.24.5(@types/node@24.19.1):
+  mysql2@3.24.5(@types/node@24.19.2):
     dependencies:
-      '@types/node': 24.19.1
+      '@types/node': 24.19.2
       aws-ssl-profiles: 1.1.2
       generate-function: 2.3.1
       iconv-lite: 0.7.3
@@ -1388,7 +1388,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.2
-      '@types/node': 24.19.1
+      '@types/node': 24.19.2
       long: 5.3.2
 
   proxy-from-env@2.1.0: {}
@@ -1409,7 +1409,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  sharp@0.35.5(@types/node@24.19.1):
+  sharp@0.35.5(@types/node@24.19.2):
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
@@ -1440,7 +1440,7 @@ snapshots:
       '@img/sharp-win32-arm64': 0.35.5
       '@img/sharp-win32-ia32': 0.35.5
       '@img/sharp-win32-x64': 0.35.5
-      '@types/node': 24.19.1
+      '@types/node': 24.19.2
 
   sonic-boom@4.2.1:
     dependencies:
