@@ -123,6 +123,13 @@
             text-decoration: underline;
         }
 
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .material-symbols-rounded {
             font-family: 'Material Symbols Rounded';
             font-weight: normal;
@@ -194,17 +201,6 @@
             background-color: var(--md-sys-color-surface-container-high);
             color: var(--md-sys-color-on-surface);
             text-decoration: none;
-        }
-
-        .nav-link:focus-visible,
-        .theme-toggle-btn:focus-visible,
-        .btn:focus-visible,
-        .tab-btn:focus-visible,
-        .copy-btn:focus-visible,
-        .tab-header-btn:focus-visible,
-        .code-block .copy-code-btn:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
         }
 
         .theme-toggle-btn {
@@ -833,7 +829,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Light or Dark Theme" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" type="button" aria-label="Toggle light or dark theme" title="Toggle Light/Dark Theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -1009,7 +1005,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" type="button" aria-label="Copy code snippet" onclick="copyText(this)">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1239,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                        <button class="copy-btn" type="button" aria-label="Copy command syntax" onclick="copyCommand('${cmd.name}')">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1250,10 +1246,20 @@ npm start</code>
         }
 
         // Search Listener
-        document.getElementById('commandSearch').addEventListener('input', (e) => {
+        const commandSearchInput = document.getElementById('commandSearch');
+        commandSearchInput.addEventListener('input', (e) => {
             const activeTab = document.querySelector('.filter-tabs .tab-btn.active');
             const category = activeTab ? activeTab.dataset.category : 'all';
             renderCommands(category, e.target.value);
+        });
+
+        commandSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && e.target.value) {
+                e.target.value = '';
+                const activeTab = document.querySelector('.filter-tabs .tab-btn.active');
+                const category = activeTab ? activeTab.dataset.category : 'all';
+                renderCommands(category, '');
+            }
         });
 
         // Filter Tabs
