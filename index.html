@@ -114,11 +114,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        :focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
-        }
-
         a {
             color: var(--md-sys-color-primary);
             text-decoration: none;
@@ -126,6 +121,11 @@
 
         a:hover {
             text-decoration: underline;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
         }
 
         .material-symbols-rounded {
@@ -819,15 +819,17 @@
             </div>
             <span>BOT_404</span>
         </div>
-        <ul class="nav-links">
-            <li><a href="#overview" class="nav-link"><span class="material-symbols-rounded">info</span> Overview</a></li>
-            <li><a href="#architecture" class="nav-link"><span class="material-symbols-rounded">schema</span> Architecture</a></li>
-            <li><a href="#commands" class="nav-link"><span class="material-symbols-rounded">terminal</span> Commands</a></li>
-            <li><a href="#quickstart" class="nav-link"><span class="material-symbols-rounded">rocket_launch</span> Setup</a></li>
-            <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
-            <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
-        </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
+        <nav aria-label="Main navigation">
+            <ul class="nav-links">
+                <li><a href="#overview" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">info</span> Overview</a></li>
+                <li><a href="#architecture" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">schema</span> Architecture</a></li>
+                <li><a href="#commands" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">terminal</span> Commands</a></li>
+                <li><a href="#quickstart" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">rocket_launch</span> Setup</a></li>
+                <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">dashboard</span> Operations</a></li>
+                <li><a href="#security" class="nav-link"><span class="material-symbols-rounded" aria-hidden="true">security</span> Security</a></li>
+            </ul>
+        </nav>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Switch to light theme">
             <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
@@ -960,7 +962,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded" aria-hidden="true">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <input type="text" id="commandSearch" aria-label="Search commands, usages, or features" placeholder="Search commands, usages, or features...">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -1233,7 +1235,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}', this)">
                             <span class="material-symbols-rounded" style="font-size: 16px;" aria-hidden="true">content_copy</span>
                             Copy Syntax
                         </button>
@@ -1278,13 +1280,20 @@ npm start</code>
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
+            const nextMode = newTheme === 'light' ? 'dark' : 'light';
+            themeToggleBtn.setAttribute('aria-label', `Switch to ${nextMode} theme`);
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
         // Copy Helper
-        function copyCommand(text) {
+        function copyCommand(text, btnElement) {
             navigator.clipboard.writeText(text);
             showSnackbar(`Copied command '${text}' to clipboard`);
+            if (btnElement) {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;" aria-hidden="true">check</span> Copied!`;
+                setTimeout(() => { btnElement.innerHTML = originalHTML; }, 2000);
+            }
         }
 
         function copyText(buttonEl) {
@@ -1292,6 +1301,9 @@ npm start</code>
             if (codeBlock) {
                 navigator.clipboard.writeText(codeBlock.textContent.trim());
                 showSnackbar('Configuration snippet copied');
+                const originalHTML = buttonEl.innerHTML;
+                buttonEl.innerHTML = `<span class="material-symbols-rounded" style="font-size: 14px;" aria-hidden="true">check</span> Copied!`;
+                setTimeout(() => { buttonEl.innerHTML = originalHTML; }, 2000);
             }
         }
 
