@@ -8,18 +8,15 @@ const token = process.env.DASHBOARD_TOKEN ?? ''
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
-function safeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a)
-  const bufB = Buffer.from(b)
-  if (bufA.length !== bufB.length) return false
-  return crypto.timingSafeEqual(bufA, bufB)
-}
-
-export function authorized(req: http.IncomingMessage) {
-  if (!token) return process.env.NODE_ENV !== 'production'
+function authorized(req: http.IncomingMessage) {
+  if (!token) return false
   const authHeader = req.headers.authorization
   if (!authHeader) return false
-  return safeCompare(authHeader, `Bearer ${token}`)
+  const expected = `Bearer ${token}`
+  const a = Buffer.from(authHeader)
+  const b = Buffer.from(expected)
+  if (a.length !== b.length) return false
+  return crypto.timingSafeEqual(a, b)
 }
 
 export function startDashboard(repo: MessageRepository) {
