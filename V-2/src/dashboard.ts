@@ -4,22 +4,18 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
+const token = process.env.DASHBOARD_TOKEN ?? ''
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
-function safeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a)
-  const bufB = Buffer.from(b)
-  if (bufA.length !== bufB.length) return false
-  return crypto.timingSafeEqual(bufA, bufB)
-}
-
-function authorized(req: http.IncomingMessage) {
-  const token = process.env.DASHBOARD_TOKEN ?? ''
-  if (!token) return false
-  const authHeader = req.headers.authorization
-  if (!authHeader) return false
-  return safeCompare(authHeader, `Bearer ${token}`)
+export function authorized(req: http.IncomingMessage, secretToken = token) {
+  if (!secretToken) return process.env.NODE_ENV !== 'production'
+  const expected = `Bearer ${secretToken}`
+  const actual = req.headers.authorization ?? ''
+  const expectedBuf = Buffer.from(expected)
+  const actualBuf = Buffer.from(actual)
+  if (expectedBuf.length !== actualBuf.length) return false
+  return crypto.timingSafeEqual(expectedBuf, actualBuf)
 }
 
 export function startDashboard(repo: MessageRepository) {
