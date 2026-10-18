@@ -1,5 +1,3 @@
-# Palette's Journal
-
-## 2025-02-23 - Material Symbols Accessibility Pattern
-**Learning:** Material Design icon-only buttons (`.material-symbols-rounded`) are visually clear but invisible or confusing to screen readers without explicit `aria-label` on the parent `<button>` and `aria-hidden="true"` on the icon `<span>`.
-**Action:** When adding or modifying Material Symbols buttons, always hide the icon `<span>` with `aria-hidden="true"` and set a descriptive `aria-label` on the host interactive element.
+## 2025-02-24 - Accessible Interactive Components in index.html
+**Learning:** When adding accessibility attributes like `aria-pressed` or `aria-selected` to custom tab or filter buttons, event listeners must dynamically toggle both visual classes (`active`) and ARIA attributes in sync.
+**Action:** Always ensure interactive JS handlers update both class states and ARIA states simultaneously.
