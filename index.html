@@ -124,8 +124,13 @@
         }
 
         a:focus-visible,
-        button:focus-visible,
-        input:focus-visible {
+        .btn:focus-visible,
+        .nav-link:focus-visible,
+        .theme-toggle-btn:focus-visible,
+        .tab-btn:focus-visible,
+        .copy-btn:focus-visible,
+        .copy-code-btn:focus-visible,
+        .tab-header-btn:focus-visible {
             outline: 2px solid var(--md-sys-color-primary);
             outline-offset: 2px;
         }
@@ -829,7 +834,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" type="button" aria-label="Toggle light or dark theme" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -961,16 +966,16 @@
 
             <div class="controls-bar">
                 <div class="search-box">
-                    <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" aria-label="Search commands" placeholder="Search commands, usages, or features...">
+                    <span class="material-symbols-rounded" aria-hidden="true">search</span>
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
-                <div class="filter-tabs">
-                    <button class="tab-btn active" data-category="all">All Commands</button>
-                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
-                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
-                    <button class="tab-btn" data-category="web">Web Tools</button>
-                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
-                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                <div class="filter-tabs" role="tablist" aria-label="Command categories">
+                    <button class="tab-btn active" data-category="all" role="tab" aria-selected="true">All Commands</button>
+                    <button class="tab-btn" data-category="ai" role="tab" aria-selected="false">AI &amp; Vision</button>
+                    <button class="tab-btn" data-category="media" role="tab" aria-selected="false">Media &amp; DL</button>
+                    <button class="tab-btn" data-category="web" role="tab" aria-selected="false">Web Tools</button>
+                    <button class="tab-btn" data-category="reader" role="tab" aria-selected="false">Reader &amp; Literature</button>
+                    <button class="tab-btn" data-category="v2" role="tab" aria-selected="false">V-2 Recovery</button>
                 </div>
             </div>
 
@@ -989,12 +994,12 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
-                        <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
+                <div class="tab-header" role="tablist" aria-label="Setup instructions">
+                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')" role="tab" aria-selected="true">
+                        <span class="material-symbols-rounded" aria-hidden="true">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
-                        <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
+                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')" role="tab" aria-selected="false">
+                        <span class="material-symbols-rounded" aria-hidden="true">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
 
@@ -1005,8 +1010,8 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" type="button" aria-label="Copy code snippet" onclick="copyText(this)">
-                                <span class="material-symbols-rounded">content_copy</span> Copy
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
+                                <span class="material-symbols-rounded" aria-hidden="true">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
 cd V-1
@@ -1235,8 +1240,8 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" type="button" aria-label="Copy command syntax" onclick="copyCommand('${cmd.name}')">
-                            <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy command syntax for ${cmd.name}">
+                            <span class="material-symbols-rounded" style="font-size: 16px;" aria-hidden="true">content_copy</span>
                             Copy Syntax
                         </button>
                     </div>
@@ -1246,27 +1251,21 @@ npm start</code>
         }
 
         // Search Listener
-        const commandSearchInput = document.getElementById('commandSearch');
-        commandSearchInput.addEventListener('input', (e) => {
+        document.getElementById('commandSearch').addEventListener('input', (e) => {
             const activeTab = document.querySelector('.filter-tabs .tab-btn.active');
             const category = activeTab ? activeTab.dataset.category : 'all';
             renderCommands(category, e.target.value);
         });
 
-        commandSearchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && e.target.value) {
-                e.target.value = '';
-                const activeTab = document.querySelector('.filter-tabs .tab-btn.active');
-                const category = activeTab ? activeTab.dataset.category : 'all';
-                renderCommands(category, '');
-            }
-        });
-
         // Filter Tabs
         document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
                 btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
                 const searchQuery = document.getElementById('commandSearch').value;
                 renderCommands(btn.dataset.category, searchQuery);
             });
@@ -1274,10 +1273,14 @@ npm start</code>
 
         // Switch Setup Tab
         function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-header-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
             event.currentTarget.classList.add('active');
+            event.currentTarget.setAttribute('aria-selected', 'true');
             document.getElementById(tabId).classList.add('active');
         }
 
