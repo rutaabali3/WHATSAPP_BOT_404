@@ -1,9 +1,14 @@
+// Pre-compiled regular expressions for string formatting to avoid repeated allocations and recompilation during frequent formatting calls.
+const RE_WHITESPACE = /\s+/g
+const RE_WORD_DELIMITER = /[-_]/g
+const RE_FIRST_LETTER = /\b\w/g
+
 function clip(value: unknown, max = 1200) {
-  const text = String(value ?? '').replace(/\s+/g, ' ').trim()
+  const text = String(value ?? '').replace(RE_WHITESPACE, ' ').trim()
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
+function titleCase(value: string) { return value.replace(RE_WORD_DELIMITER, ' ').replace(RE_FIRST_LETTER, c => c.toUpperCase()) }
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
