@@ -23,6 +23,8 @@ export function authorized(req: http.IncomingMessage, secretToken = token) {
 export function startDashboard(repo: MessageRepository) {
   const server = http.createServer(async (req, res) => {
     if (!authorized(req)) { res.writeHead(401, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'unauthorized' })); return }
+    // Prevent MIME sniffing security risks on API responses
+    res.setHeader('X-Content-Type-Options', 'nosniff')
     try {
       if (req.method === 'GET' && req.url === '/api/status') {
         const files = await fs.readdir(mediaDir).catch(() => [])
