@@ -1,3 +1,3 @@
-## 2025-10-07 - Accessible Theme Toggle and Search Inputs
-**Learning:** Icon-only buttons and search inputs in standalone dashboard HTML pages frequently lack explicit `aria-label`, `type="button"`, or focus ring indicators, degrading keyboard and screen-reader accessibility.
-**Action:** Always add `aria-label`, `aria-live="polite"` on theme toggles, and uniform `:focus-visible` ring rules on key interactive elements.
+## 2025-05-10 - Keyboard focus indicators & ARIA labels in single-page HTML apps
+**Learning:** Single-page dashboard controls using custom styled buttons and inputs require explicit `aria-label`s and `:focus-visible` CSS rules using theme primary tokens to support keyboard navigation and screen readers without layout distortion.
+**Action:** When working on standalone HTML documentation or dashboard interfaces, check interactive icon buttons and search inputs for ARIA labels and `:focus-visible` styling.
