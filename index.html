@@ -196,6 +196,17 @@
             text-decoration: none;
         }
 
+        .nav-link:focus-visible,
+        .theme-toggle-btn:focus-visible,
+        .btn:focus-visible,
+        .tab-btn:focus-visible,
+        .copy-btn:focus-visible,
+        .tab-header-btn:focus-visible,
+        .code-block .copy-code-btn:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .theme-toggle-btn {
             background: transparent;
             border: none;
@@ -822,7 +833,7 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Light or Dark Theme" title="Toggle Light/Dark Theme">
             <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
@@ -955,7 +966,7 @@
             <div class="controls-bar">
                 <div class="search-box">
                     <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <input type="text" id="commandSearch" aria-label="Search commands" placeholder="Search commands, usages, or features...">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
