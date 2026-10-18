@@ -1,9 +1,33 @@
+// Pre-computed tuple of preferred field names and their title-cased labels
+// to avoid re-allocating array, running filter/map closures, and executing regex on every item format.
+const PREFERRED_FIELDS: ReadonlyArray<readonly [key: string, label: string]> = [
+  ['name', 'Name'],
+  ['title', 'Title'],
+  ['question', 'Question'],
+  ['content', 'Content'],
+  ['description', 'Description'],
+  ['url', 'Url'],
+  ['watchUrl', 'WatchUrl'],
+  ['imdbUrl', 'ImdbUrl'],
+  ['id', 'Id']
+]
+
+const titleCaseCache = new Map<string, string>()
+
+// Memoized titleCase lookup to avoid redundant regex replacements on repeated keys
+function titleCase(value: string): string {
+  let cached = titleCaseCache.get(value)
+  if (cached === undefined) {
+    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    titleCaseCache.set(value, cached)
+  }
+  return cached
+}
+
 function clip(value: unknown, max = 1200) {
   const text = String(value ?? '').replace(/\s+/g, ' ').trim()
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
-
-function titleCase(value: string) { return value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) }
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -25,7 +49,13 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
-  const preferred = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id']
-  const parts = preferred.filter(k => obj[k] != null).map(k => `${titleCase(k)}: ${clip(obj[k], 260)}`)
+  const parts: string[] = []
+  for (let i = 0; i < PREFERRED_FIELDS.length; i++) {
+    const [key, label] = PREFERRED_FIELDS[i]
+    const val = obj[key]
+    if (val != null) {
+      parts.push(`${label}: ${clip(val, 260)}`)
+    }
+  }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
 }
