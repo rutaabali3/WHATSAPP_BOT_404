@@ -52,6 +52,30 @@ export const n8n = (endpoint: string, params: Record<string, string | number> = 
 export const courses = (q: string) => getJson('/api/courses', { q })
 export const driveup = (params: Record<string, string | number>) => getJson('/api/driveup', params)
 
+// Prevent Server-Side Request Forgery (SSRF) by validating protocol and blocking internal/private targets
 export function isValidHttpUrl(value: string) {
-  try { const u = new URL(value); return u.protocol === 'http:' || u.protocol === 'https:' } catch { return false }
+  try {
+    const u = new URL(value)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return false
+    const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+    if (
+      host === 'localhost' ||
+      host === '0' ||
+      host === '::' ||
+      host === '::1' ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      /^0\./.test(host) ||
+      /^127\./.test(host) ||
+      /^10\./.test(host) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host) ||
+      /^192\.168\./.test(host) ||
+      /^169\.254\./.test(host)
+    ) {
+      return false
+    }
+    return true
+  } catch {
+    return false
+  }
 }
