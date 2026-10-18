@@ -1,3 +1,5 @@
-## 2025-05-18 - Material Design 3 Accessible Tab & Search Controls
-**Learning:** In static single-page documentation dashboards (such as `index.html`), custom button tabs require explicit `role="tablist"`, `role="tab"`, and programmatically synced `aria-selected` state updates on tab clicks to ensure screen readers announce active tab selection correctly.
-**Action:** When adding or updating custom tab controls or search inputs, always pair CSS active classes with `aria-selected` attribute updates and `aria-label`/`aria-controls` bindings.
+# Palette's Journal
+
+## 2025-02-23 - Material Symbols Accessibility Pattern
+**Learning:** Material Design icon-only buttons (`.material-symbols-rounded`) are visually clear but invisible or confusing to screen readers without explicit `aria-label` on the parent `<button>` and `aria-hidden="true"` on the icon `<span>`.
+**Action:** When adding or modifying Material Symbols buttons, always hide the icon `<span>` with `aria-hidden="true"` and set a descriptive `aria-label` on the host interactive element.
