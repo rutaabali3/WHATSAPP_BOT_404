@@ -1,3 +1,3 @@
-## 2025-10-04 - Accessible Interactive Components in Static Documentation Dashboards
-**Learning:** Adding explicit focus-visible states, ARIA labels for dynamic button components, and live region roles to toast notifications significantly improves screen reader usability and keyboard navigation without structural layout changes.
-**Action:** When working on HTML/CSS web interfaces, always ensure all icon buttons have accessible labels, toast notifications use `role="status"` and `aria-live="polite"`, and interactive elements receive visible focus rings via `:focus-visible`.
+## 2025-10-05 - Accessible Focus Outlines for High-Contrast Custom Themes
+**Learning:** Custom Material Design theme tokens on dark background require explicit `:focus-visible` outline offsets using system primary color tokens to ensure visible focus indicators across both light and dark themes.
+**Action:** Apply global `:focus-visible` outlines with `--md-sys-color-primary` on interactive components in single-page HTML documentation.
