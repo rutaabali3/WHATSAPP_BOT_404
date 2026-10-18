@@ -1,3 +1,5 @@
-## 2025-05-18 - Memoizing Regex Title Casing in Repeated Formatting
-**Learning:** In hot formatting paths (like `formatApiResult` processing API collections), repeatedly performing regex replacement and string transformations on common object key names (e.g. `titleCase`) creates significant regex execution overhead and GC pressure. Memoizing string transformations on key names reduced formatting time by ~50%.
-**Action:** Always memoize pure string transformations (such as `titleCase` or field name normalizers) when called inside collection mapping or list formatting loops.
+# Bolt's Journal
+
+## 2025-05-18 - Pre-compiled Regexes for Hot Formatter Paths
+**Learning:** Modern V8 engine caches literal regexes in functions, but module-scoped constants still avoid allocation overhead and clarify hot-path code intent during string formatting. Care must be taken not to include untracked generated lockfiles (`pnpm-lock.yaml`) during local verification.
+**Action:** Always clean up temporary workspace lockfiles before requesting code review and submitting PRs.
