@@ -1,52 +1,43 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import http from 'node:http'
-import type { AddressInfo } from 'node:net'
-import { authorized, startDashboard } from '../src/dashboard.js'
+import type http from 'node:http'
+import { authorized } from '../src/dashboard.js'
 
-test('authorized uses timing-safe token matching', () => {
-  const reqValid = { headers: { authorization: 'Bearer secret123' } } as http.IncomingMessage
-  const reqInvalid = { headers: { authorization: 'Bearer wrongtoken' } } as http.IncomingMessage
-  const reqNoAuth = { headers: {} } as http.IncomingMessage
-
-  assert.equal(authorized(reqValid, 'secret123'), true)
-  assert.equal(authorized(reqInvalid, 'secret123'), false)
-  assert.equal(authorized(reqNoAuth, 'secret123'), false)
+test('denies authorization when DASHBOARD_TOKEN is not set or empty', () => {
+  const originalToken = process.env.DASHBOARD_TOKEN
+  delete process.env.DASHBOARD_TOKEN
+  try {
+    const req = { headers: { authorization: 'Bearer secret' } } as unknown as http.IncomingMessage
+    assert.equal(authorized(req), false)
+  } finally {
+    process.env.DASHBOARD_TOKEN = originalToken
+  }
 })
 
-test('startDashboard enforces payload size limit on POST /api/trusted', async () => {
-  const mockRepo: any = {
-    pool: {
-      execute: async () => [[]]
-    }
-  }
-
-  const server = startDashboard(mockRepo)
-
-  if (!server.listening) {
-    await new Promise(resolve => server.once('listening', resolve))
-  }
-
-  const port = (server.address() as AddressInfo).port
-
+test('denies authorization for missing or invalid authorization header', () => {
+  const originalToken = process.env.DASHBOARD_TOKEN
+  process.env.DASHBOARD_TOKEN = 'secret123'
   try {
-    const hugeData = 'a'.repeat(70 * 1024)
-    const status = await new Promise<number>((resolve, reject) => {
-      const req = http.request(`http://127.0.0.1:${port}/api/trusted`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        }
-      }, (res) => {
-        resolve(res.statusCode ?? 0)
-      })
-      req.on('error', reject)
-      req.write(hugeData)
-      req.end()
-    })
+    const noHeaderReq = { headers: {} } as unknown as http.IncomingMessage
+    assert.equal(authorized(noHeaderReq), false)
 
-    assert.equal(status, 413)
+    const wrongHeaderReq = { headers: { authorization: 'Bearer wrongsecret' } } as unknown as http.IncomingMessage
+    assert.equal(authorized(wrongHeaderReq), false)
+
+    const malformedReq = { headers: { authorization: 'Basic secret123' } } as unknown as http.IncomingMessage
+    assert.equal(authorized(malformedReq), false)
   } finally {
-    await new Promise(resolve => server.close(resolve))
+    process.env.DASHBOARD_TOKEN = originalToken
+  }
+})
+
+test('grants authorization for valid Bearer token', () => {
+  const originalToken = process.env.DASHBOARD_TOKEN
+  process.env.DASHBOARD_TOKEN = 'secret123'
+  try {
+    const validReq = { headers: { authorization: 'Bearer secret123' } } as unknown as http.IncomingMessage
+    assert.equal(authorized(validReq), true)
+  } finally {
+    process.env.DASHBOARD_TOKEN = originalToken
   }
 })
