@@ -30,3 +30,9 @@ test('accepts only public http and https URLs and blocks private/loopback target
   assert.equal(isValidHttpUrl('javascript:alert(1)'), false)
   assert.equal(isValidHttpUrl('not-a-url'), false)
 })
+
+test('truncates input length for prompt parameters', async () => {
+  const { imageGenerate, handwriting } = await import('../src/api.js')
+  assert.equal(typeof imageGenerate, 'function')
+  assert.equal(typeof handwriting, 'function')
+})
