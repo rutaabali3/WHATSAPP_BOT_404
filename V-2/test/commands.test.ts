@@ -22,9 +22,9 @@ test('normalizes owner JIDs and rejects a different number', () => {
   assert.equal(isOwnerJid('status@broadcast', 'invalid'), false)
 })
 
-test('accepts only http and https URLs', () => {
+test('accepts only valid public http and https URLs', () => {
   assert.equal(isValidHttpUrl('https://example.com/a?q=1'), true)
-  assert.equal(isValidHttpUrl('http://localhost:3000'), true)
+  assert.equal(isValidHttpUrl('http://localhost:3000'), false)
   assert.equal(isValidHttpUrl('javascript:alert(1)'), false)
   assert.equal(isValidHttpUrl('not-a-url'), false)
 })
