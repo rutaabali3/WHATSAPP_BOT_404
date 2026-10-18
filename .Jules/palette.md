@@ -1,5 +1,3 @@
-# Palette's UX & Accessibility Journal
-
-## 2025-05-18 - Interactive Landing Page Accessibility & Focus Ring Consistency
-**Learning:** In single-page HTML documentation apps, icon buttons (such as theme toggles and dynamic copy buttons) and search inputs often lack explicit ARIA labels and keyboard focus indicators, making screen reader and keyboard navigation ambiguous.
-**Action:** Always ensure search inputs, icon-only buttons, and dynamically rendered buttons receive descriptive `aria-label` attributes and `:focus-visible` styling using design system primary tokens.
+## 2025-05-18 - Material Design 3 Accessible Tab & Search Controls
+**Learning:** In static single-page documentation dashboards (such as `index.html`), custom button tabs require explicit `role="tablist"`, `role="tab"`, and programmatically synced `aria-selected` state updates on tab clicks to ensure screen readers announce active tab selection correctly.
+**Action:** When adding or updating custom tab controls or search inputs, always pair CSS active classes with `aria-selected` attribute updates and `aria-label`/`aria-controls` bindings.
