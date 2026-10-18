@@ -128,6 +128,11 @@
             text-decoration: underline;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         .material-symbols-rounded {
             font-family: 'Material Symbols Rounded';
             font-weight: normal;
@@ -1170,7 +1175,7 @@ npm start</code>
     </div>
 
     <!-- Toast Snackbar -->
-    <div class="snackbar" id="snackbar">
+    <div class="snackbar" id="snackbar" role="status" aria-live="polite">
         <span class="material-symbols-rounded">check_circle</span>
         <span id="snackbarMsg">Copied to clipboard!</span>
     </div>
