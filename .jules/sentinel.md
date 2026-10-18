@@ -1,4 +1,4 @@
-## 2025-05-18 - Authorization Bypass via Unsanitized Empty String JID Normalization
-**Vulnerability:** `isOwnerJid` normalized WhatsApp JIDs and owner numbers by stripping non-digit characters (`.replace(/\D/g, '')`). When provided non-numeric JIDs (e.g., `status@broadcast`) or when `ownerNumber` was unconfigured/empty, both normalized values evaluated to empty strings (`"" === ""`), evaluating to `true` and granting owner authorization.
-**Learning:** Normalization logic that strips non-conforming characters can turn invalid or empty inputs into matching defaults (like empty strings) if string length and presence aren't validated after stripping.
-**Prevention:** Always validate that normalized strings are non-empty before checking equality when performing access control logic.
+## 2025-05-10 - Preventing SSRF via URL Validation
+**Vulnerability:** External fetch helper functions (`isValidHttpUrl`) accepted loopback, local network, and private RFC 1918 IPv4/IPv6 addresses, exposing internal services to Server-Side Request Forgery (SSRF).
+**Learning:** URL validation checking only `http:` / `https:` protocols is insufficient for user-provided URLs when backend services perform HTTP requests or snapshots on those URLs.
+**Prevention:** Filter hostnames against loopback (`127.0.0.0/8`, `::1`), link-local (`169.254.0.0/16`), private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and `localhost` before making outbound requests.

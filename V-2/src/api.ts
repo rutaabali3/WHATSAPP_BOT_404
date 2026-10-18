@@ -56,22 +56,12 @@ export function isValidHttpUrl(value: string) {
   try {
     const u = new URL(value)
     if (u.protocol !== 'http:' && u.protocol !== 'https:') return false
-    // Security: Mitigate SSRF risks by rejecting local, loopback, and private IP ranges
-    const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, '')
-    if (
-      host === 'localhost' ||
-      host.endsWith('.local') ||
-      host.endsWith('.internal') ||
-      host === '127.0.0.1' ||
-      host === '0.0.0.0' ||
-      host === '::1' ||
-      host.startsWith('10.') ||
-      host.startsWith('192.168.') ||
-      host.startsWith('169.254.') ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
-    ) {
-      return false
-    }
+    const hostname = u.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+    if (hostname === 'localhost' || hostname === '0.0.0.0' || hostname === '::' || hostname === '::1') return false
+    if (hostname.startsWith('127.') || hostname.startsWith('10.') || hostname.startsWith('192.168.') || hostname.startsWith('169.254.')) return false
+    if (/^172\.(1[6-9]|2[0-9]|3[01])\./.test(hostname)) return false
     return true
-  } catch { return false }
+  } catch {
+    return false
+  }
 }
