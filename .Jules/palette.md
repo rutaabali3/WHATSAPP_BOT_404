@@ -1,3 +1,5 @@
-## 2025-10-13 - Focus indicators & ARIA semantics in Material Design web dashboards
-**Learning:** Icon fonts (like Google Material Symbols) rendered as inline text inside buttons or search bars are spoken literally by screen readers (e.g. "search Search commands") unless suppressed with `aria-hidden="true"`. Combining `aria-hidden="true"` on decorative icons with explicit `:focus-visible` styles and ARIA tab roles significantly improves keyboard and screen-reader accessibility without visually altering Material Design 3 components.
-**Action:** Always add `aria-hidden="true"` to icon spans, ensure icon-only buttons have descriptive `aria-label` attributes, and include `:focus-visible` ring rules on dark-themed dashboards.
+# Palette's Journal - Critical Learnings
+
+## 2025-05-18 - Material Design 3 Focus Indicators & ARIA Tab pattern
+**Learning:** Pure Material 3 web dashboards using dark/light theme CSS variables need explicit `:focus-visible` outline rings for icon buttons and custom tab buttons to comply with keyboard accessibility (WCAG 2.4.7). Dynamic client-side command search grids benefit significantly from polite screen reader announcements (`aria-live="polite"`) when filtered.
+**Action:** Always include `:focus-visible` rules using primary color variables and add live count regions for interactive search inputs in static HTML dashboards.
