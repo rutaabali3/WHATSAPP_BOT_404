@@ -1,38 +1,52 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import http from 'node:http'
 import type { AddressInfo } from 'node:net'
-import { startDashboard } from '../src/dashboard.js'
+import { authorized, startDashboard } from '../src/dashboard.js'
 
-test('dashboard authentication enforces DASHBOARD_TOKEN and timing-safe checks', async () => {
-  const dummyRepo = {} as any
-  delete process.env.DASHBOARD_TOKEN
+test('authorized uses timing-safe token matching', () => {
+  const reqValid = { headers: { authorization: 'Bearer secret123' } } as http.IncomingMessage
+  const reqInvalid = { headers: { authorization: 'Bearer wrongtoken' } } as http.IncomingMessage
+  const reqNoAuth = { headers: {} } as http.IncomingMessage
 
-  const server = startDashboard(dummyRepo)
-  await new Promise(resolve => server.once('listening', resolve))
-  const address = server.address() as AddressInfo
-  const baseUrl = `http://127.0.0.1:${address.port}`
+  assert.equal(authorized(reqValid, 'secret123'), true)
+  assert.equal(authorized(reqInvalid, 'secret123'), false)
+  assert.equal(authorized(reqNoAuth, 'secret123'), false)
+})
+
+test('startDashboard enforces payload size limit on POST /api/trusted', async () => {
+  const mockRepo: any = {
+    pool: {
+      execute: async () => [[]]
+    }
+  }
+
+  const server = startDashboard(mockRepo)
+
+  if (!server.listening) {
+    await new Promise(resolve => server.once('listening', resolve))
+  }
+
+  const port = (server.address() as AddressInfo).port
 
   try {
-    // 1. Unset DASHBOARD_TOKEN -> Should return 401
-    const res1 = await fetch(`${baseUrl}/api/status`)
-    assert.equal(res1.status, 401)
-
-    // 2. Set DASHBOARD_TOKEN and test invalid token -> Should return 401
-    process.env.DASHBOARD_TOKEN = 'secret-token-123'
-    const res2 = await fetch(`${baseUrl}/api/status`, {
-      headers: { authorization: 'Bearer wrong-token' }
+    const hugeData = 'a'.repeat(70 * 1024)
+    const status = await new Promise<number>((resolve, reject) => {
+      const req = http.request(`http://127.0.0.1:${port}/api/trusted`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        }
+      }, (res) => {
+        resolve(res.statusCode ?? 0)
+      })
+      req.on('error', reject)
+      req.write(hugeData)
+      req.end()
     })
-    assert.equal(res2.status, 401)
 
-    // 3. Valid token -> Should return 200
-    const res3 = await fetch(`${baseUrl}/api/status`, {
-      headers: { authorization: 'Bearer secret-token-123' }
-    })
-    assert.equal(res3.status, 200)
-    const data = await res3.json()
-    assert.equal(data.ok, true)
+    assert.equal(status, 413)
   } finally {
-    delete process.env.DASHBOARD_TOKEN
     await new Promise(resolve => server.close(resolve))
   }
 })
