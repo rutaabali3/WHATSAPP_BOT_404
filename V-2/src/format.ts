@@ -1,39 +1,31 @@
-// Performance Optimization: Hoist static property mappings and collection keys to prevent
-// per-item array allocations and redundant regex operations during API response formatting.
-const PREFERRED_PROPERTIES: Array<{ key: string; label: string }> = [
-  { key: 'name', label: 'Name' },
-  { key: 'title', label: 'Title' },
-  { key: 'question', label: 'Question' },
-  { key: 'content', label: 'Content' },
-  { key: 'description', label: 'Description' },
-  { key: 'url', label: 'Url' },
-  { key: 'watchUrl', label: 'WatchUrl' },
-  { key: 'imdbUrl', label: 'ImdbUrl' },
-  { key: 'id', label: 'Id' }
-]
+const MULTI_SPACE_REGEX = /\s+/g
+const DELIMITER_REGEX = /[-_]/g
+const WORD_BOUND_REGEX = /\b\w/g
 
-const COLLECTION_KEYS = ['results', 'courses', 'novels', 'chapters', 'categories', 'templates', 'details'] as const
-
-// Cache titleCase transformations to avoid repeated regex string manipulations (~3.8x speedup)
 const titleCaseCache = new Map<string, string>()
 
-function clip(value: unknown, max = 1200) {
-  let text = String(value ?? '').trim()
-  // Guard regex replacement: only run if text contains multiple spaces, newlines, or tabs
-  if (/[\s\r\n\t]{2,}|[\r\n\t]/.test(text)) {
-    text = text.replace(/\s+/g, ' ')
-  }
+function clip(value: unknown, max = 1200): string {
+  if (value == null || value === '') return ''
+  const raw = typeof value === 'string' ? value : String(value)
+  if (raw.length === 0) return ''
+  // Replace consecutive whitespace and trim
+  const text = raw.replace(MULTI_SPACE_REGEX, ' ').trim()
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-function titleCase(value: string) {
+// Caches title-cased property names to avoid redundant regex operations
+function titleCase(value: string): string {
   let cached = titleCaseCache.get(value)
-  if (!cached) {
-    cached = value.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  if (cached !== undefined) return cached
+  cached = value.replace(DELIMITER_REGEX, ' ').replace(WORD_BOUND_REGEX, c => c.toUpperCase())
+  if (titleCaseCache.size < 500) {
     titleCaseCache.set(value, cached)
   }
   return cached
 }
+
+const PREFERRED_ITEM_KEYS = ['name', 'title', 'question', 'content', 'description', 'url', 'watchUrl', 'imdbUrl', 'id'] as const
+const COLLECTION_KEYS = ['results', 'courses', 'novels', 'chapters', 'categories', 'templates', 'details'] as const
 
 export function formatApiResult(value: unknown, title = 'Result'): string {
   if (value == null) return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\nNo result returned.`
@@ -45,9 +37,11 @@ export function formatApiResult(value: unknown, title = 'Result'): string {
   if (data.success === false || data.ok === false) return `*🤖 BOT_404 — ERROR*\n\n${clip(data.error ?? data.message ?? 'The API returned an error.')}`
   if (Array.isArray(data.voices)) return `*🤖 BOT_404 — SPEECHSTER VOICES*\n\n${data.voices.slice(0, 60).map((v: any) => `${v.index ?? '?'} — ${v.name ?? v.id ?? 'Unnamed'} (${v.language ?? 'unknown'})`).join('\n') || 'No voices found.'}`
   if (Array.isArray(data.questions)) return `*🤖 BOT_404 — MY TELENOR QUIZ*\n\n*Date:* ${data.date ?? 'Today'}\n${data.questions.map((q: any) => `\n${q.number ?? ''}. ${clip(q.question, 300)}\n*Answer:* ${clip(q.answer, 160)}`).join('\n')}`
+
   const collectionKey = COLLECTION_KEYS.find(k => Array.isArray(data[k]))
   if (collectionKey) return `*🤖 BOT_404 — ${titleCase(collectionKey).toUpperCase()}*${data.total != null ? ` (${data.total})` : ''}\n\n${(data[collectionKey] as unknown[]).slice(0, 20).map((item, i) => `${i + 1}. ${formatItem(item)}`).join('\n') || 'No items found.'}`
-  const lines = Object.entries(data).filter(([key]) => !['success', 'ok'].includes(key)).slice(0, 30).map(([key, item]) => `*${titleCase(key)}:* ${formatItem(item)}`)
+
+  const lines = Object.entries(data).filter(([key]) => key !== 'success' && key !== 'ok').slice(0, 30).map(([key, item]) => `*${titleCase(key)}:* ${formatItem(item)}`)
   return `*🤖 BOT_404 — ${title.toUpperCase()}*\n\n${lines.join('\n') || 'No data returned.'}`
 }
 
@@ -55,12 +49,12 @@ function formatItem(item: unknown): string {
   if (item == null) return '—'
   if (typeof item !== 'object') return clip(item, 500)
   const obj = item as Record<string, unknown>
+
   const parts: string[] = []
-  for (let i = 0; i < PREFERRED_PROPERTIES.length; i++) {
-    const prop = PREFERRED_PROPERTIES[i]
-    const val = obj[prop.key]
-    if (val != null) {
-      parts.push(`${prop.label}: ${clip(val, 260)}`)
+  for (let i = 0; i < PREFERRED_ITEM_KEYS.length; i++) {
+    const k = PREFERRED_ITEM_KEYS[i]
+    if (obj[k] != null) {
+      parts.push(`${titleCase(k)}: ${clip(obj[k], 260)}`)
     }
   }
   return parts.join(' · ') || clip(JSON.stringify(item), 500)
