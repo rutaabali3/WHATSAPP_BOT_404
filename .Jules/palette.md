@@ -1,3 +1,3 @@
-## 2025-02-24 - Accessible Interactive Components in index.html
-**Learning:** When adding accessibility attributes like `aria-pressed` or `aria-selected` to custom tab or filter buttons, event listeners must dynamically toggle both visual classes (`active`) and ARIA attributes in sync.
-**Action:** Always ensure interactive JS handlers update both class states and ARIA states simultaneously.
+## 2025-10-13 - Focus indicators & ARIA semantics in Material Design web dashboards
+**Learning:** Icon fonts (like Google Material Symbols) rendered as inline text inside buttons or search bars are spoken literally by screen readers (e.g. "search Search commands") unless suppressed with `aria-hidden="true"`. Combining `aria-hidden="true"` on decorative icons with explicit `:focus-visible` styles and ARIA tab roles significantly improves keyboard and screen-reader accessibility without visually altering Material Design 3 components.
+**Action:** Always add `aria-hidden="true"` to icon spans, ensure icon-only buttons have descriptive `aria-label` attributes, and include `:focus-visible` ring rules on dark-themed dashboards.
