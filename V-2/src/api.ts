@@ -53,5 +53,15 @@ export const courses = (q: string) => getJson('/api/courses', { q })
 export const driveup = (params: Record<string, string | number>) => getJson('/api/driveup', params)
 
 export function isValidHttpUrl(value: string) {
-  try { const u = new URL(value); return u.protocol === 'http:' || u.protocol === 'https:' } catch { return false }
+  try {
+    const u = new URL(value)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return false
+    const hostname = u.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+    if (hostname === 'localhost' || hostname === '0.0.0.0' || hostname === '::' || hostname === '::1') return false
+    if (hostname.startsWith('127.') || hostname.startsWith('10.') || hostname.startsWith('192.168.') || hostname.startsWith('169.254.')) return false
+    if (/^172\.(1[6-9]|2[0-9]|3[01])\./.test(hostname)) return false
+    return true
+  } catch {
+    return false
+  }
 }
