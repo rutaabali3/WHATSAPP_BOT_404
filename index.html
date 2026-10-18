@@ -106,6 +106,12 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
+        :focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+            border-radius: var(--md-sys-shape-corner-xs);
+        }
+
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -822,8 +828,8 @@
             <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
-        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
-            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
+            <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
         </button>
     </header>
 
@@ -954,8 +960,8 @@
 
             <div class="controls-bar">
                 <div class="search-box">
-                    <span class="material-symbols-rounded">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                    <span class="material-symbols-rounded" aria-hidden="true">search</span>
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands, usages, or features">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -982,24 +988,24 @@
             </div>
 
             <div class="tabs-container">
-                <div class="tab-header">
-                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
-                        <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
+                <div class="tab-header" role="tablist" aria-label="Setup Guides">
+                    <button class="tab-header-btn active" role="tab" id="tab-v1" aria-selected="true" aria-controls="v1-setup" onclick="switchSetupTab('v1-setup')">
+                        <span class="material-symbols-rounded" aria-hidden="true">javascript</span> Version 1 Setup (JS)
                     </button>
-                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
-                        <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
+                    <button class="tab-header-btn" role="tab" id="tab-v2" aria-selected="false" aria-controls="v2-setup" onclick="switchSetupTab('v2-setup')">
+                        <span class="material-symbols-rounded" aria-hidden="true">integration_instructions</span> Version 2 Setup (TS + MariaDB)
                     </button>
                 </div>
 
                 <div class="tab-body">
                     <!-- V1 Setup -->
-                    <div class="tab-content active" id="v1-setup">
+                    <div class="tab-content active" id="v1-setup" role="tabpanel" aria-labelledby="tab-v1">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
                             <button class="copy-code-btn" onclick="copyText(this)">
-                                <span class="material-symbols-rounded">content_copy</span> Copy
+                                <span class="material-symbols-rounded" aria-hidden="true">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
 cd V-1
@@ -1019,7 +1025,7 @@ npm start</code>
                     </div>
 
                     <!-- V2 Setup -->
-                    <div class="tab-content" id="v2-setup">
+                    <div class="tab-content" id="v2-setup" role="tabpanel" aria-labelledby="tab-v2">
                         <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
@@ -1229,7 +1235,7 @@ npm start</code>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
                         <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
-                            <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
+                            <span class="material-symbols-rounded" aria-hidden="true" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
                     </div>
@@ -1257,11 +1263,14 @@ npm start</code>
 
         // Switch Setup Tab
         function switchSetupTab(tabId) {
-            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-header-btn').forEach(btn => {
+                const isActive = btn.getAttribute('aria-controls') === tabId;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === tabId);
+            });
         }
 
         // Theme Toggle
