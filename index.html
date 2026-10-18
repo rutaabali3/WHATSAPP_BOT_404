@@ -221,6 +221,13 @@
             color: var(--md-sys-color-on-surface);
         }
 
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
         /* Container Layout */
         .container {
             max-width: 1200px;
@@ -1005,7 +1012,7 @@
                             Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Navigate to V-1 directory
@@ -1031,7 +1038,7 @@ npm start</code>
                             Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
                         </p>
                         <div class="code-block">
-                            <button class="copy-code-btn" onclick="copyText(this)">
+                            <button class="copy-code-btn" onclick="copyText(this)" aria-label="Copy code snippet">
                                 <span class="material-symbols-rounded">content_copy</span> Copy
                             </button>
                             <code># Ensure MariaDB server is active on port 3306
@@ -1235,7 +1242,7 @@ npm start</code>
                     <div class="command-usage">${cmd.usage}</div>
                     <div class="command-desc">${cmd.desc}</div>
                     <div class="command-footer">
-                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                    <button class="copy-btn" onclick="copyCommand('${cmd.name}')" aria-label="Copy syntax for ${cmd.name}">
                             <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
                             Copy Syntax
                         </button>
