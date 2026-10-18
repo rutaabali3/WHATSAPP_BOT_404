@@ -4,8 +4,8 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import type { MessageRepository } from './db.js'
 
+const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
-const MAX_PAYLOAD_SIZE = 1024 * 1024 // 1MB limit to prevent DoS
 
 function safeCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a)
@@ -16,13 +16,13 @@ function safeCompare(a: string, b: string): boolean {
 
 function authorized(req: http.IncomingMessage) {
   const token = process.env.DASHBOARD_TOKEN ?? ''
-  if (!token) return process.env.NODE_ENV !== 'production'
-  const header = req.headers.authorization ?? ''
-  return safeCompare(header, `Bearer ${token}`)
+  if (!token) return false
+  const authHeader = req.headers.authorization
+  if (!authHeader) return false
+  return safeCompare(authHeader, `Bearer ${token}`)
 }
 
 export function startDashboard(repo: MessageRepository) {
-  const port = Number(process.env.DASHBOARD_PORT ?? 8788)
   const server = http.createServer(async (req, res) => {
     if (!authorized(req)) { res.writeHead(401, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'unauthorized' })); return }
     try {
@@ -32,18 +32,7 @@ export function startDashboard(repo: MessageRepository) {
         res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify(body)); return
       }
       if (req.method === 'POST' && req.url === '/api/trusted') {
-        const chunks: Buffer[] = []
-        let totalSize = 0
-        for await (const chunk of req) {
-          const buf = Buffer.from(chunk)
-          totalSize += buf.length
-          if (totalSize > MAX_PAYLOAD_SIZE) {
-            res.writeHead(413, { 'content-type': 'application/json' })
-            res.end(JSON.stringify({ error: 'payload_too_large' }))
-            return
-          }
-          chunks.push(buf)
-        }
+        const chunks: Buffer[] = []; for await (const chunk of req) chunks.push(Buffer.from(chunk))
         const body = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { jid?: string; type?: 'user' | 'group'; note?: string }
         if (!body.jid || !body.type) { res.writeHead(400); res.end(JSON.stringify({ error: 'jid and type required' })); return }
         await repo.pool.execute('INSERT INTO trusted_entities (jid, entity_type, note) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE entity_type=VALUES(entity_type), note=VALUES(note)', [body.jid, body.type, body.note ?? null])

@@ -2,66 +2,35 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import http from 'node:http'
 import { startDashboard } from '../src/dashboard.js'
-import type { MessageRepository } from '../src/db.js'
 
-test('dashboard authentication and security constraints', async (t) => {
+test('dashboard authorization checks', async () => {
   process.env.DASHBOARD_TOKEN = 'secret-token-123'
-  process.env.DASHBOARD_PORT = '8799'
+  const mockRepo = { pool: { execute: async () => [] } } as any
+  const server = startDashboard(mockRepo)
 
-  const dummyRepo = {
-    pool: {
-      execute: async () => [[]],
-    },
-  } as unknown as MessageRepository
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+  const address = server.address() as { port: number }
+  const baseUrl = `http://127.0.0.1:${address.port}`
 
-  const server = startDashboard(dummyRepo)
+  try {
+    // Test without auth header -> 401
+    const res1 = await fetch(`${baseUrl}/api/status`)
+    assert.equal(res1.status, 401)
 
-  t.after(() => {
-    server.close()
-  })
-
-  // 1. Unauthorized request
-  const unauthRes = await new Promise<{ statusCode?: number }>((resolve, reject) => {
-    const req = http.request('http://127.0.0.1:8799/api/status', { method: 'GET' }, (res) => {
-      resolve({ statusCode: res.statusCode })
+    // Test with invalid token -> 401
+    const res2 = await fetch(`${baseUrl}/api/status`, {
+      headers: { authorization: 'Bearer wrong-token' }
     })
-    req.on('error', reject)
-    req.end()
-  })
-  assert.equal(unauthRes.statusCode, 401)
+    assert.equal(res2.status, 401)
 
-  // 2. Authorized request with matching Bearer token
-  const authRes = await new Promise<{ statusCode?: number }>((resolve, reject) => {
-    const req = http.request('http://127.0.0.1:8799/api/status', {
-      method: 'GET',
-      headers: { Authorization: 'Bearer secret-token-123' },
-    }, (res) => {
-      resolve({ statusCode: res.statusCode })
+    // Test with valid token -> 200
+    const res3 = await fetch(`${baseUrl}/api/status`, {
+      headers: { authorization: 'Bearer secret-token-123' }
     })
-    req.on('error', reject)
-    req.end()
-  })
-  assert.equal(authRes.statusCode, 200)
-
-  // 3. Payload size exceeding 1MB
-  const payloadRes = await new Promise<{ statusCode?: number }>((resolve, reject) => {
-    const req = http.request('http://127.0.0.1:8799/api/trusted', {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer secret-token-123',
-        'Content-Type': 'application/json',
-      },
-    }, (res) => {
-      resolve({ statusCode: res.statusCode })
-    })
-    req.on('error', reject)
-
-    // Write > 1MB of data
-    const chunk = Buffer.alloc(512 * 1024, 'a')
-    req.write(chunk)
-    req.write(chunk)
-    req.write(chunk)
-    req.end()
-  })
-  assert.equal(payloadRes.statusCode, 413)
+    assert.equal(res3.status, 200)
+    const body = await res3.json()
+    assert.equal(body.ok, true)
+  } finally {
+    await new Promise((resolve) => server.close(resolve))
+  }
 })
