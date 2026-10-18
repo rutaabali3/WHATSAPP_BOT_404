@@ -106,11 +106,6 @@
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
         }
 
-        *:focus-visible {
-            outline: 2px solid var(--md-sys-color-primary);
-            outline-offset: 2px;
-        }
-
         body {
             font-family: var(--md-sys-typescale-font-family);
             background-color: var(--md-sys-color-background);
@@ -828,7 +823,7 @@
             <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
         </ul>
         <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Switch to light theme">
-            <span class="material-symbols-rounded" id="themeIcon" aria-hidden="true">light_mode</span>
+            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
         </button>
     </header>
 
@@ -959,8 +954,8 @@
 
             <div class="controls-bar">
                 <div class="search-box">
-                    <span class="material-symbols-rounded" aria-hidden="true">search</span>
-                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features..." aria-label="Search commands">
+                    <span class="material-symbols-rounded">search</span>
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
                 </div>
                 <div class="filter-tabs">
                     <button class="tab-btn active" data-category="all">All Commands</button>
@@ -1278,8 +1273,7 @@ npm start</code>
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', newTheme);
             themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
-            const nextTheme = newTheme === 'light' ? 'dark' : 'light';
-            themeToggleBtn.setAttribute('aria-label', `Switch to ${nextTheme} theme`);
+            themeToggleBtn.setAttribute('aria-label', newTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
             showSnackbar(`Switched to ${newTheme} mode`);
         });
 
