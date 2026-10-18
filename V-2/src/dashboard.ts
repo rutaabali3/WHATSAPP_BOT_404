@@ -7,15 +7,23 @@ import type { MessageRepository } from './db.js'
 const port = Number(process.env.DASHBOARD_PORT ?? 8788)
 const mediaDir = path.resolve(process.env.MEDIA_DIR ?? './data/media')
 
-function authorized(req: http.IncomingMessage) {
+/**
+ * Perform constant-time string comparison to prevent timing side-channel attacks.
+ */
+export function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  if (bufA.length !== bufB.length) return false
+  return crypto.timingSafeEqual(bufA, bufB)
+}
+
+export function authorized(req: http.IncomingMessage) {
   const token = process.env.DASHBOARD_TOKEN ?? ''
   if (!token) return process.env.NODE_ENV !== 'production'
-  const header = req.headers.authorization ?? ''
-  const expected = `Bearer ${token}`
-  // Security: Use timingSafeEqual on fixed-length sha256 digests to prevent timing attacks when verifying bearer token
-  const expectedHash = crypto.createHash('sha256').update(expected).digest()
-  const actualHash = crypto.createHash('sha256').update(header).digest()
-  return crypto.timingSafeEqual(expectedHash, actualHash)
+  const authHeader = req.headers.authorization
+  if (typeof authHeader !== 'string') return false
+  // Use timing-safe comparison to prevent secret token extraction via timing side-channels
+  return safeCompare(authHeader, `Bearer ${token}`)
 }
 
 export function startDashboard(repo: MessageRepository) {
