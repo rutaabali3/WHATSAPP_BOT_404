@@ -11,6 +11,10 @@
 [![Database](https://img.shields.io/badge/Database-MariaDB_10.4+-003545?style=for-the-badge&logo=mariadb&logoColor=white)](https://mariadb.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
+[![V-1](https://img.shields.io/badge/V--1-STABLE_PRODUCTION-2EA44F?style=for-the-badge)](V-1/README.md)
+[![V-2](https://img.shields.io/badge/V--2-STABLE_PRODUCTION-2EA44F?style=for-the-badge)](V-2/README.md)
+[![V-3](https://img.shields.io/badge/V--3-IN_DEVELOPMENT-F9A825?style=for-the-badge)](V-3/README.md)
+
 </div>
 
 ---
@@ -18,17 +22,19 @@
 ## TABLE OF CONTENTS
 
 - [Overview](#overview)
-- [Architectural Comparison: V-1 vs V-2](#architectural-comparison-v-1-vs-v-2)
+- [Generational Architectural Comparison](#generational-architectural-comparison)
 - [System Architecture](#system-architecture)
 - [Quick Start Guide](#quick-start-guide)
   - [Prerequisites](#prerequisites)
   - [Version 1 Installation](#version-1-installation)
   - [Version 2 Installation](#version-2-installation)
+  - [Version 3 Installation](#version-3-installation)
 - [Configuration & Environment Specifications](#configuration--environment-specifications)
 - [Interactive Command Matrix](#interactive-command-matrix)
   - [V-1 Command Suite](#v-1-command-suite)
   - [V-2 Command Suite](#v-2-command-suite)
-- [Local Operations & Dashboard (V-2)](#local-operations--dashboard-v-2)
+  - [V-3 Command Suite](#v-3-command-suite)
+- [Local Operations & Dashboard (V-2 / V-3)](#local-operations--dashboard-v-2--v-3)
 - [Security & Data Privacy Directives](#security--data-privacy-directives)
 - [Troubleshooting & Diagnostics](#troubleshooting--diagnostics)
 - [Contributing & License](#contributing--license)
@@ -39,7 +45,7 @@
 
 This repository houses a local-first monorepo containing three generations (V-1, V-2, and the in-progress V-3) of an automated WhatsApp communication bot built on top of the [Baileys](https://github.com/WhiskeySockets/Baileys) web protocol implementation.
 
-Both bot versions run **100% locally on your machine**, eliminating third-party cloud dependencies, subscription APIs, or hosted middleware. All message processing, database storage, session persistence, and media conversions execute locally.
+All three generations run **100% locally on your machine**, eliminating third-party cloud dependencies, subscription APIs, or hosted middleware. All message processing, database storage, session persistence, and media conversions execute locally.
 
 ### KEY HIGHLIGHTS
 
@@ -51,19 +57,20 @@ Both bot versions run **100% locally on your machine**, eliminating third-party 
 
 ---
 
-## ARCHITECTURAL COMPARISON: V-1 VS V-2
+## GENERATIONAL ARCHITECTURAL COMPARISON
 
-| Feature / Dimension | Version 1 (V-1) | Version 2 (V-2) |
-| :--- | :--- | :--- |
-| **Development Status** | Stable Production | Stable Production |
-| **Primary Language** | JavaScript (ES Modules) | TypeScript (Strict Mode) |
-| **Runtime Requirements** | Node.js >= 18 | Node.js >= 20 |
-| **Persistence Layer** | File System (JSON / Pino Logs) | MariaDB / MySQL Relational Schema |
-| **Anti-Delete Capture** | Not Supported | Always-on local message capture & owner alert |
-| **View-Once Recovery** | Not Supported | Quoted media extraction via `.vv` |
-| **Operations Dashboard** | Console / Pino Logs | Local HTTP REST API (Port 8787/8788) |
-| **Concurrency Engine** | `p-queue` Rate Limiter | Distributed Queue + Database Audit Logs |
-| **API Adapter System** | Direct API Integrations | Centralized `src/api.ts` Modular Adapters |
+| Feature / Dimension | Version 1 (V-1) | Version 2 (V-2) | Version 3 (V-3) |
+| :--- | :--- | :--- | :--- |
+| **Development Status** | Stable Production | Stable Production | Active Development (future development planned) |
+| **Primary Language** | JavaScript (ES Modules) | TypeScript (Strict Mode) | TypeScript (Modular Plugin Architecture) |
+| **Runtime Requirements** | Node.js >= 18 | Node.js >= 20 | Node.js >= 20 |
+| **Persistence Layer** | File System (JSON / Pino Logs) | MariaDB / MySQL Relational Schema | MariaDB / MySQL + Message Retention Policy |
+| **Voice Transcription** | Not Supported | Not Supported | Background Groq Whisper capture + zero-latency `.transcribe` |
+| **Status Stories** | Not Applicable | Not Applicable | `.story` text / photo / video / voice broadcast suite |
+| **Intent Engine** | Not Supported | Not Supported | Natural-language zero-prefix routing |
+| **Operations Dashboard** | Console / Pino Logs | Local HTTP REST API (Port 8787/8788) | Local Material Design 3 dashboard (Port 8787/8788) |
+| **Concurrency Engine** | `p-queue` Rate Limiter | Distributed Queue + Database Audit Logs | Database-backed Rate Limits + Chat Debouncer |
+| **API Adapter System** | Direct API Integrations | Centralized `src/api.ts` Modular Adapters | Centralized Adapters + Plugin Modules |
 
 ---
 
@@ -80,18 +87,19 @@ Both bot versions run **100% locally on your machine**, eliminating third-party 
 |          Multi-File Auth State (auth_info / auth_info_baileys)        |
 +-----------------------------------------------------------------------+
                                    |
-                +------------------+------------------+
-                |                                     |
-                v                                     v
-+-------------------------------+   +----------------------------------+
-|      V-1 ENGINE (JAVASCRIPT)  |   |     V-2 ENGINE (TYPESCRIPT)      |
-|  - Router & Fuzzy Matching    |   |  - Anti-Delete Event Interceptor |
-|  - Rate Limiter (5 req/10s)   |   |  - View-Once Recovery (.vv)      |
-|  - Direct Groq / DDGS / yt-dlp|   |  - MariaDB Storage Engine        |
-|  - Image Watermark (Sharp)    |   |  - Local REST Dashboard (8788)   |
-+-------------------------------+   +----------------------------------+
-                |                                     |
-                +------------------+------------------+
+           +-------------------------+-------------------------+
+           |                         |                         |
+           v                         v                         v
++---------------------+   +---------------------+   +---------------------+
+|  V-1 (JAVASCRIPT)   |   |  V-2 (TYPESCRIPT)   |   |  V-3 (TYPESCRIPT)   |
+|  - Router & Fuzzy   |   |  - Anti-Delete      |   |  - Intent Engine    |
+|  - p-queue Limiter  |   |  - View-Once (.vv)  |   |  - Whisper Voice    |
+|  - yt-dlp / TTS     |   |  - MariaDB Storage  |   |  - .story Stories   |
+|  - Sharp Watermark  |   |  - REST Ops API     |   |  - Plugin Modules   |
+|  (Console + Logs)   |   |  (Ports 8787/8788)  |   |  - Material UI Dash |
++---------------------+   +---------------------+   +---------------------+
+           |                         |                         |
+           +-------------------------+-------------------------+
                                    |
                                    v
 +-----------------------------------------------------------------------+
@@ -106,10 +114,11 @@ Both bot versions run **100% locally on your machine**, eliminating third-party 
 
 ### PREREQUISITES
 
-1. **Node.js**: Version 18+ for V-1, Version 20+ for V-2.
-2. **WhatsApp Account**: A active mobile device ready to link via QR code scan.
-3. **MariaDB / MySQL**: Required for V-2 (XAMPP / local MariaDB server listening on port 3306).
+1. **Node.js**: Version 18+ for V-1, Version 20+ for V-2 and V-3.
+2. **WhatsApp Account**: An active mobile device ready to link via QR code scan (V-3 additionally supports 8-digit pairing-code linking).
+3. **MariaDB / MySQL**: Required for V-2 and V-3 (XAMPP / local MariaDB server listening on port 3306).
 4. **yt-dlp & ffmpeg**: Optional binaries for media download capabilities.
+5. **Groq API Keys**: Required for V-1 AI commands and V-3 chat/voice transcription.
 
 ---
 
@@ -175,6 +184,48 @@ npm start
 
 ---
 
+### VERSION 3 INSTALLATION
+
+> **Heads-up**: V-3 is under active development (future development planned) — expect breaking changes until a stable tag is cut.
+
+<details>
+<summary><b>Click to expand V-3 Setup Commands</b></summary>
+
+```bash
+# Ensure MariaDB is running (e.g., via XAMPP)
+
+# Navigate to V-3 directory
+cd V-3
+
+# Install package dependencies
+npm install
+
+# Copy environment configuration
+cp .env.example .env
+
+# Edit .env and supply your Groq keys, owner JID, and dashboard token
+# nano .env OR code .env
+
+# Initialize the MariaDB schema
+npm run setup-db
+
+# Build TypeScript source code
+npm run build
+
+# Run deterministic unit tests
+npm test
+
+# Launch production process
+npm start
+
+# Development mode (tsx watch)
+npm run dev
+```
+
+</details>
+
+---
+
 ## CONFIGURATION & ENVIRONMENT SPECIFICATIONS
 
 <details>
@@ -208,6 +259,30 @@ npm start
 | `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL for API service adapters. |
 | `DASHBOARD_TOKEN` | `""` | Bearer token required for localhost ops API in production. |
 | `MEDIA_DIR` | `./data/media` | Disk path for retained view-once and anti-delete media files. |
+
+</details>
+
+<details>
+<summary><b>V-3 Environment Variables Table (.env)</b></summary>
+
+| Key | Default Value | Description |
+| :--- | :--- | :--- |
+| `DB_HOST` / `DB_PORT` | `127.0.0.1` / `3306` | MariaDB server host and port. |
+| `DB_USER` / `DB_PASSWORD` | `root` / `""` | MariaDB database credentials. |
+| `DB_NAME` | `bot_404` | Target MariaDB database schema name. |
+| `OWNER_NUMBER` | `""` | Owner WhatsApp ID receiving priority / urgent alerts. |
+| `OWNER_NAME` | `""` | Owner friendly name used by the intelligence filter. |
+| `PREFIX` | `.` | Command prefix for public users. |
+| `PAIRING_NUMBER` | `""` | Phone number (with country code) for 8-digit pairing code linking; blank enables QR scan. |
+| `MEDIA_DIR` | `./data/media` | Disk path for retained media files. |
+| `MESSAGE_RETENTION_DAYS` | `30` | Database message retention window in days. |
+| `API_BASE_URL` | `""` | Base URL for backend API service adapters. |
+| `API_TIMEOUT_MS` / `API_VIDEO_TIMEOUT_MS` | `45000` / `180000` | Adapter request timeouts. |
+| `SEARXNG_URL` | `https://searx.be` | SearXNG metasearch endpoint for web tools. |
+| `GROQ_API_KEY_CHAT` / `GROQ_API_KEY_VOICE` / `GROQ_API_KEY` | `""` | Dedicated Groq keys for chat, Whisper voice, and fallback. |
+| `DASHBOARD_PORT` / `HEALTH_PORT` | `8788` / `8787` | Local dashboard and health service ports. |
+| `DASHBOARD_TOKEN` | `""` | Bearer token required for the dashboard API. |
+| `RATE_LIMIT_WINDOW_MS` / `RATE_LIMIT_MAX_COMMANDS` | `60000` / `30` | Per-user rate limiting window and command budget. |
 
 </details>
 
@@ -303,13 +378,33 @@ npm start
 
 ---
 
-## LOCAL OPERATIONS & DASHBOARD (V-2)
+### V-3 COMMAND SUITE
 
-Version 2 includes a background management service bound strictly to local loopback interface (`127.0.0.1`):
+<details>
+<summary><b>V-3 Intelligence, Status & Speech Tools (Click to Expand)</b></summary>
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.transcribe` | Reply to audio + `.transcribe` | Returns the cached Whisper transcript instantly from MariaDB; voice notes are transcribed silently in the background with no chat clutter. |
+| `.story` | `.story <text>` or reply to media + `.story [caption]` | Owner-only status posting: text, photo, video, and voice stories with dynamic high-contrast colors. |
+| `.image` | `.image <prompt>` | Generates 1024x1024 AI images via Pollinations (no external API key). |
+| Natural Language | No prefix required | Intent engine routes phrases like *"draw a futuristic city"* or *"i want generate image"* directly to the right feature. |
+
+Aliases for `.story`: `.poststatus`, `.statuspost`, `.setstatus`, `.upstatus`. Urgent keywords detected in silent transcripts (`emergency`, `accident`, `asap`, `police`, …) trigger instant priority alerts to the owner. The full catalog lives in [V-3/plan/COMMANDS.md](V-3/plan/COMMANDS.md).
+
+</details>
+
+---
+
+## LOCAL OPERATIONS & DASHBOARD (V-2 / V-3)
+
+Versions 2 and 3 include background management services bound strictly to the local loopback interface (`127.0.0.1`). V-3 additionally ships a Material Design 3 dashboard UI on the operations port:
 
 - **Health Endpoint**: `GET http://127.0.0.1:8787/health`
 - **Operations Endpoint**: `GET http://127.0.0.1:8788/api/status`
 - **Trusted Entity Control**: `POST http://127.0.0.1:8788/api/trusted`
+
+Set `DASHBOARD_TOKEN` (both versions) before production use; requests without a valid bearer token are rejected when `NODE_ENV=production`.
 
 ### PRODUCTION DEPLOYMENT WITH PM2
 
@@ -328,7 +423,8 @@ pm2 start ecosystem.config.cjs
 1. **Authentication Credentials**: Never share or push files within `auth_info/` or `auth_info_baileys/`. These contain raw cryptographic keys providing full access to your linked WhatsApp account.
 2. **Environment Protection**: Ensure `.env` is listed in your `.gitignore` file before committing changes.
 3. **Local Scope Bounding**: Keep health ports (`8787`, `8788`) bound strictly to `127.0.0.1`. Do not expose these ports over public port-forwarding or reverse proxies without strong bearer tokens.
-4. **Terms Compliance**: Use this automation framework strictly in accordance with applicable laws, chat participant consent, and WhatsApp Service Terms.
+4. **Version Maturity**: V-3 is under active development with future development planned — validate its behavior on your own test account before operational use.
+5. **Terms Compliance**: Use this automation framework strictly in accordance with applicable laws, chat participant consent, and WhatsApp Service Terms.
 
 ---
 
@@ -338,7 +434,8 @@ pm2 start ecosystem.config.cjs
 <summary><b>Issue: QR Code Fails to Render or Scan</b></summary>
 
 - Expand terminal window width to prevent ASCII QR wrap-around errors.
-- Delete existing session folder (`rm -rf V-1/auth_info_baileys` or `rm -rf V-2/auth_info`) and restart the bot process to generate a fresh QR code.
+- Delete existing session folder (`rm -rf V-1/auth_info_baileys`, `rm -rf V-2/auth_info`, or `rm -rf V-3/auth_info`) and restart the bot process to generate a fresh QR code.
+- V-3 alternative: set `PAIRING_NUMBER` in `V-3/.env` to receive an 8-digit pairing code instead of scanning a QR.
 
 </details>
 
@@ -346,8 +443,8 @@ pm2 start ecosystem.config.cjs
 <summary><b>Issue: MariaDB Connection Errors (V-2)</b></summary>
 
 - Verify XAMPP or local MariaDB server status on port 3306.
-- Ensure `sql/schema.sql` was executed successfully against database `bot_404`.
-- Validate user credentials in `V-2/.env`.
+- Ensure `sql/schema.sql` was executed successfully against database `bot_404` (V-3: run `npm run setup-db` inside `V-3`).
+- Validate user credentials in `V-2/.env` or `V-3/.env`.
 
 </details>
 
