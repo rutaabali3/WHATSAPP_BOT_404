@@ -1,0 +1,7 @@
+node_modules/
+dist/
+auth_info/
+data/media/*
+!data/media/.gitkeep
+.env
+*.log

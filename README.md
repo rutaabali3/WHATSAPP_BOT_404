@@ -37,7 +37,7 @@
 
 ## OVERVIEW
 
-This repository houses a local-first monorepo containing two iterations of an automated WhatsApp communication bot built on top of the [Baileys](https://github.com/WhiskeySockets/Baileys) web protocol implementation.
+This repository houses a local-first monorepo containing three generations (V-1, V-2, and the in-progress V-3) of an automated WhatsApp communication bot built on top of the [Baileys](https://github.com/WhiskeySockets/Baileys) web protocol implementation.
 
 Both bot versions run **100% locally on your machine**, eliminating third-party cloud dependencies, subscription APIs, or hosted middleware. All message processing, database storage, session persistence, and media conversions execute locally.
 
@@ -46,6 +46,7 @@ Both bot versions run **100% locally on your machine**, eliminating third-party 
 - **Zero Cloud Lock-in**: Autonomous operation via direct WhatsApp Web socket connections.
 - **Privacy Core**: Session storage, auth keys, and database payloads remain exclusively on host hardware.
 - **Dual-Generation Engine**: Access both the stable JavaScript production bot (V-1) and the high-throughput TypeScript engine (V-2).
+- **Third Generation In Progress**: The modular TypeScript engine ([V-3](V-3/README.md)) is under active development and will see further development in the future — it is not yet designated stable production.
 - **Configurable Backend Routing**: Extensible REST API adapter layer mapping commands to custom local or remote backends.
 
 ---
@@ -54,7 +55,7 @@ Both bot versions run **100% locally on your machine**, eliminating third-party 
 
 | Feature / Dimension | Version 1 (V-1) | Version 2 (V-2) |
 | :--- | :--- | :--- |
-| **Development Status** | Stable Production | Active Development |
+| **Development Status** | Stable Production | Stable Production |
 | **Primary Language** | JavaScript (ES Modules) | TypeScript (Strict Mode) |
 | **Runtime Requirements** | Node.js >= 18 | Node.js >= 20 |
 | **Persistence Layer** | File System (JSON / Pino Logs) | MariaDB / MySQL Relational Schema |

@@ -1,40 +1,88 @@
-# Sasti Automation — WhatsApp Bot
+<div align="center">
 
-A feature-rich WhatsApp bot built with Node.js and Baileys (unofficial WhatsApp Web API). Provides 25+ commands spanning AI chat, image generation, media downloading, web tools, entertainment, and utilities.
+# BOT_404 — VERSION 1 (SASTI AUTOMATION)
+
+**Stable JavaScript Edition — Local-First WhatsApp Automation Engine**
+
+[![Status](https://img.shields.io/badge/Status-STABLE_PRODUCTION-2EA44F?style=for-the-badge)](../../README.md)
+[![Node Version](https://img.shields.io/badge/Node.js-%E2%89%A518.0-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ESM-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Protocol](https://img.shields.io/badge/Protocol-Baileys_v6-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://github.com/WhiskeySockets/Baileys)
+[![AI Backend](https://img.shields.io/badge/AI-Groq_LLaMA_3.3_70B-F55036?style=for-the-badge)](https://console.groq.com)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](../../LICENSE)
+
+</div>
 
 ---
 
-## Features
+## TABLE OF CONTENTS
 
-### AI & Image
+- [Overview](#overview)
+- [Feature Matrix](#feature-matrix)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start Guide](#quick-start-guide)
+- [Configuration Reference](#configuration-reference)
+- [Architecture Overview](#architecture-overview)
+- [Dependencies](#dependencies)
+- [Security & Data Privacy Directives](#security--data-privacy-directives)
+- [License](#license)
+
+---
+
+## OVERVIEW
+
+A feature-rich WhatsApp bot built with Node.js and [Baileys](https://github.com/WhiskeySockets/Baileys) (unofficial WhatsApp Web API). Provides **25+ commands** spanning AI chat, image generation, media downloading, web tools, entertainment, and utilities. The bot runs 100% locally — no third-party cloud bot service sits between you and WhatsApp.
+
+> **DEVELOPMENT STATUS: STABLE PRODUCTION.** This generation is feature-frozen for production use. Expect only critical bug fixes; all breaking changes and new capabilities land in V-3.
+
+---
+
+## FEATURE MATRIX
+
+<details>
+<summary><b>Artificial Intelligence & Vision (Click to Expand)</b></summary>
+
 | Command | Aliases | Description |
-|---------|---------|-------------|
+| :--- | :--- | :--- |
 | `.aibot` | — | AI chatbot powered by Groq (LLaMA 3.3 70B) |
 | `.vision` | — | Analyze an image with AI (reply with or caption an image) |
 | `.img` | — | Generate AI images from text prompt (supports ratios, bulk up to 50) |
 | `.i2i` | `.pti` | Image-to-image AI transformation (reply to an image) |
 
-### Media & Downloading
+</details>
+
+<details>
+<summary><b>Media & Downloading (Click to Expand)</b></summary>
+
 | Command | Aliases | Description |
-|---------|---------|-------------|
+| :--- | :--- | :--- |
 | `.dl` | — | Download video via yt-dlp (MP4) |
 | `.audio` | — | Download audio via yt-dlp (MP3) |
 | `.alldl` | — | Universal downloader (YouTube, TikTok, Instagram, Facebook, Twitter/X, Reddit, Snapchat, SoundCloud, CapCut, etc.) |
 | `.tts` | — | Text-to-speech conversion (MP3 audio) |
 | `.voices` | — | List available TTS voices |
 
-### Web Tools
+</details>
+
+<details>
+<summary><b>Web Tools (Click to Expand)</b></summary>
+
 | Command | Aliases | Description |
-|---------|---------|-------------|
+| :--- | :--- | :--- |
 | `.screenshot` | `.ss` | Capture a website screenshot (PNG or PDF) |
 | `.zip` | — | Archive a website as downloadable ZIP |
 | `.wikipdf` | `.wiki` | Generate a Wikipedia article as PDF |
 | `.cert` | — | Generate a PDF certificate (8 templates) |
 | `.search` | — | DuckDuckGo web search |
 
-### Entertainment & Reference
+</details>
+
+<details>
+<summary><b>Entertainment & Reference (Click to Expand)</b></summary>
+
 | Command | Aliases | Description |
-|---------|---------|-------------|
+| :--- | :--- | :--- |
 | `.manga` | — | Manga reader (search, chapters, pages) |
 | `.novel` | — | Novel reader (search, chapters, read with EN/UR support) |
 | `.unovel` | — | Urdu novels library (categories, series, authors, download) |
@@ -42,15 +90,23 @@ A feature-rich WhatsApp bot built with Node.js and Baileys (unofficial WhatsApp 
 | `.med` | — | Medicine info lookup (price, dosage, side effects, interactions) |
 | `.courses` | — | Browse free premium online courses |
 
-### Utility
+</details>
+
+<details>
+<summary><b>Utility (Click to Expand)</b></summary>
+
 | Command | Aliases | Description |
-|---------|---------|-------------|
+| :--- | :--- | :--- |
 | `.menu` | — | Show interactive help menu |
 | `.ping` | — | Health check (responds "Pong! Bot is alive.") |
 | `.mail` | — | Disposable email service (create, inbox, read, delete) |
 | `.n8n` | — | Browse n8n automation workflow templates (filter by category, complexity, trigger type) |
 
-### Bonus Features
+</details>
+
+<details>
+<summary><b>Bonus Features (Click to Expand)</b></summary>
+
 - **Spam protection** — max 5 commands per 10-second window per user; 30-second block on abuse
 - **Fuzzy command matching** — Levenshtein distance suggests corrections for typos
 - **Concurrency queue** — configurable parallel command processing (`MAX_CONCURRENT`)
@@ -60,9 +116,29 @@ A feature-rich WhatsApp bot built with Node.js and Baileys (unofficial WhatsApp 
 - **Health logging** — periodic connection/queue status every 5 minutes
 - **Dual prefix** — separate prefix for bot owner (`!!`) vs. regular users (`.`)
 
+</details>
+
 ---
 
-## Project Structure
+## TECH STACK
+
+| Layer | Technology |
+| :--- | :--- |
+| **Runtime** | Node.js ≥ 18 |
+| **Language** | JavaScript (ES Modules) |
+| **WhatsApp API** | [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys) ^6.7.0 |
+| **AI Backend** | [Groq SDK](https://console.groq.com) (LLaMA 3.3 70B) |
+| **Image Processing** | [Sharp](https://sharp.pixelplumbing.com/) ^0.33.4 |
+| **Search** | [ddgs](https://www.npmjs.com/package/ddgs) (DuckDuckGo) |
+| **Logging** | [Pino](https://getpino.io/) ^9.0.0 + pino-pretty |
+| **Concurrency** | [p-queue](https://www.npmjs.com/package/p-queue) ^8.0.1 |
+| **HTTP** | [node-fetch](https://github.com/node-fetch/node-fetch) ^3.3.2 |
+| **Media Download** | [yt-dlp](https://github.com/yt-dlp/yt-dlp) (external binary) |
+| **API Backend** | Local/self-hosted REST API via `API_BASE_URL` (default `http://127.0.0.1:3000`) |
+
+---
+
+## PROJECT STRUCTURE
 
 ```
 sasti-automation/
@@ -120,46 +196,54 @@ sasti-automation/
 
 ---
 
-## Tech Stack
+## QUICK START GUIDE
 
-| Layer | Technology |
-|-------|-----------|
-| **Runtime** | Node.js ≥ 18 |
-| **Language** | JavaScript (ES Modules) |
-| **WhatsApp API** | [@whiskeysockets/baileys](https://github.com/WhiskeySockets/Baileys) ^6.7.0 |
-| **AI Backend** | [Groq SDK](https://console.groq.com) (LLaMA 3.3 70B) |
-| **Image Processing** | [Sharp](https://sharp.pixelplumbing.com/) ^0.33.4 |
-| **Search** | [ddgs](https://www.npmjs.com/package/ddgs) (DuckDuckGo) |
-| **Logging** | [Pino](https://getpino.io/) ^9.0.0 + pino-pretty |
-| **Concurrency** | [p-queue](https://www.npmjs.com/package/p-queue) ^8.0.1 |
-| **HTTP** | [node-fetch](https://github.com/node-fetch/node-fetch) ^3.3.2 |
-| **Media Download** | [yt-dlp](https://github.com/yt-dlp/yt-dlp) (external binary) |
-| **API Backend** | Local/self-hosted REST API via `API_BASE_URL` (default `http://127.0.0.1:3000`) |
-
----
-
-## Setup
-
-### Prerequisites
+### PREREQUISITES
 
 - **Node.js** ≥ 18 (LTS recommended)
 - **npm** (ships with Node.js)
 - **yt-dlp** — [install instructions](https://github.com/yt-dlp/yt-dlp#installation); must be on `PATH` or set via `YTDLP_PATH`
 - **ffmpeg** — optional but recommended for yt-dlp format merging; set path via `FFMPEG_LOCATION`
 
-### Installation
+### INSTALLATION
+
+<details>
+<summary><b>Click to expand V-1 Setup Commands</b></summary>
 
 ```bash
-cd sasti-automation
+cd V-1
+
+# Install package dependencies
 npm install
+
+# Copy environment configuration
+cp .env.example .env
+
+# Edit .env and supply your Groq API key and local preferences
+# nano .env OR code .env
+
+# Launch bot in production mode
+npm start
+
+# Development with file-watch (Node >= 18)
+npm run dev
 ```
 
-### Configuration
+</details>
 
-Copy or edit `.env` with your settings:
+### PAIRING
+
+On first run, a **QR code** appears in the terminal. Open WhatsApp on your phone → **Linked Devices** → **Link a Device** → scan the QR. The session persists in `auth_info_baileys/` for subsequent runs.
+
+---
+
+## CONFIGURATION REFERENCE
+
+<details>
+<summary><b>V-1 Environment Variables Table (.env)</b></summary>
 
 | Variable | Default | Description |
-|----------|---------|-------------|
+| :--- | :--- | :--- |
 | `GROQ_API_KEY` | — | **Required.** Groq API key for AI chat. Get one at [console.groq.com](https://console.groq.com) |
 | `BOT_PREFIX` | `.` | Command prefix for regular users |
 | `SELF_PREFIX` | `!!` | Command prefix for bot owner |
@@ -179,21 +263,11 @@ Copy or edit `.env` with your settings:
 | `SEARCH_TIMEOUT_MS` | `15000` | Search timeout (ms) |
 | `LOG_DIR` | `./logs` | Log file directory |
 
-### Run
-
-```bash
-# Production
-npm start
-
-# Development with file-watch (Node ≥ 18)
-npm run dev
-```
-
-On first run, a **QR code** appears in the terminal. Open WhatsApp on your phone → **Linked Devices** → **Link a Device** → scan the QR. The session persists in `auth_info_baileys/` for subsequent runs.
+</details>
 
 ---
 
-## Architecture Overview
+## ARCHITECTURE OVERVIEW
 
 1. **`index.js`** — entry point; calls `src/bot.js`.
 2. **`src/bot.js`** — initializes a Baileys WhatsApp socket with multi-file auth state. Handles connection lifecycle (QR display, reconnect with exponential backoff, health logging every 5 min). Incoming messages are forwarded to the router.
@@ -204,12 +278,13 @@ On first run, a **QR code** appears in the terminal. Open WhatsApp on your phone
 
 ---
 
-## Dependencies
+## DEPENDENCIES
 
-### Node Packages
+<details>
+<summary><b>Node Packages (Click to Expand)</b></summary>
 
 | Package | Version | Purpose |
-|---------|---------|---------|
+| :--- | :--- | :--- |
 | `@whiskeysockets/baileys` | ^6.7.0 | WhatsApp Web API (WebSocket) |
 | `ddgs` | ^1.0.4 | DuckDuckGo search wrapper |
 | `dotenv` | ^16.4.5 | Environment variable loader |
@@ -221,13 +296,26 @@ On first run, a **QR code** appears in the terminal. Open WhatsApp on your phone
 | `qrcode-terminal` | ^0.12.0 | QR code rendering |
 | `sharp` | ^0.33.4 | Image processing (watermark, resize) |
 
-### System Binaries
+</details>
+
+<details>
+<summary><b>System Binaries (Click to Expand)</b></summary>
 
 - **yt-dlp** — required for `.dl` / `.audio` commands
 - **ffmpeg** — optional, for yt-dlp format merging
 
+</details>
+
 ---
 
-## License
+## SECURITY & DATA PRIVACY DIRECTIVES
 
-MIT
+1. **Authentication Credentials**: Never share or push files within `auth_info_baileys/`. These contain raw cryptographic keys providing full access to your linked WhatsApp account.
+2. **Environment Protection**: Ensure `.env` is listed in your `.gitignore` file before committing changes.
+3. **Unofficial Protocol**: Baileys uses the WhatsApp Web protocol — not an official API. Use only with an account you control and in accordance with WhatsApp's terms.
+
+---
+
+## LICENSE
+
+MIT — see the repository-root [LICENSE](../../LICENSE).

@@ -6,8 +6,16 @@ dist/
 
 # Environment & secrets (never commit)
 .env
+.env.*
+!*.env.example
 .env.local
 *.env.local
+
+# Key material & credentials (never commit)
+*.pem
+*.key
+*.keystore
+creds.json
 
 # WhatsApp auth sessions (never commit)
 auth_info/
